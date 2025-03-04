@@ -24,3 +24,35 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Styles personnalisés pour Leaflet */
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  padding: 0;
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  width: auto !important;
+}
+
+.leaflet-popup-tip {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.custom-popup .leaflet-popup-content-wrapper {
+  background-color: white;
+  color: #333;
+}
+
+/* Animation pour les marqueurs */
+.custom-marker-icon div {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.custom-marker-icon div:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🏍️ RideFlow - GPS intelligent pour motards
 
-## Getting Started
+RideFlow est une application web dédiée aux motards, qui calcule le meilleur itinéraire en tenant compte des spécificités de la route et des dangers en temps réel. Contrairement aux GPS classiques, il ne se contente pas de donner le chemin le plus rapide : il privilégie les routes adaptées aux motos et informe des risques pour une conduite plus sûre.
 
-First, run the development server:
+## 🔹 Fonctionnalités
+
+- ✅ **Itinéraires optimisés** : choix entre routes rapides ou sinueuses
+- ✅ **Radars fixes et mobiles** affichés sur la carte
+- ✅ **Accidents et bouchons signalés en temps réel**
+- ✅ **Conditions météo actuelles et prévisions sur votre trajet**
+- ✅ **Affichage dynamique sur une carte interactive**
+
+## 🛠️ Technologies et APIs
+
+### Stack technique
+
+- **Frontend** : Next.js + Tailwind CSS
+- **Carte interactive** : Leaflet.js avec OpenStreetMap
+- **Gestion des états** : Zustand
+- **Requêtes HTTP** : Axios
+
+### APIs utilisées
+
+1. **OpenRouteService** – Calcul des itinéraires avec option "sinueux"
+2. **HERE Maps API** – Infos trafic et accidents
+3. **OpenWeatherMap** – Conditions météo et alertes
+4. **Overpass API (OSM)** – Points d'intérêt pour motards (stations, garages...)
+
+## 🚀 Installation
 
 ```bash
+# Cloner le dépôt
+git clone https://github.com/votre-utilisateur/rideflow.git
+cd rideflow
+
+# Installer les dépendances
+npm install
+
+# Configurer les clés API
+# Modifiez le fichier src/utils/apiConfig.js avec vos propres clés API
+
+# Lancer le serveur de développement
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📋 Configuration des APIs
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Pour utiliser RideFlow, vous devez obtenir des clés API pour les services suivants :
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **OpenRouteService** : [S'inscrire](https://openrouteservice.org/dev/#/signup)
+2. **HERE Maps API** : [S'inscrire](https://developer.here.com/sign-up)
+3. **OpenWeatherMap** : [S'inscrire](https://openweathermap.org/api)
 
-## Learn More
+Une fois vos clés obtenues, modifiez le fichier `src/utils/apiConfig.js` :
 
-To learn more about Next.js, take a look at the following resources:
+```javascript
+export const API_KEYS = {
+  OPENROUTE_SERVICE: "VOTRE_CLÉ_OPENROUTESERVICE",
+  HERE_API: "VOTRE_CLÉ_HERE",
+  OPENWEATHER_MAP: "VOTRE_CLÉ_OPENWEATHERMAP",
+};
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🔥 Avantages du projet
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Utile pour les motards 🏍️
+- Utilise plusieurs APIs intéressantes 📡
+- Techniquement challengeant mais réalisable 💡
+- Design simple mais efficace
 
-## Deploy on Vercel
+## 📱 Captures d'écran
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+(À venir)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📜 Licence
+
+MIT
+
+## 🤝 Contribuer
+
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à soumettre une pull request.
