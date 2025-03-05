@@ -220,7 +220,7 @@ export default function MapView({ onLoad }) {
       // Créer icône de départ (verte)
       const startIcon = L.divIcon({
         className: "custom-marker-icon",
-        html: `<div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg border-2 border-white transform transition-transform hover:scale-110">A</div>`,
+        html: `<div class="w-8 h-8 bg-[#FF6A00] rounded-full flex items-center justify-center text-white font-bold shadow-lg border-2 border-white transform transition-transform hover:scale-110">A</div>`,
         iconSize: [32, 32],
         iconAnchor: [16, 16],
         popupAnchor: [0, -16],
@@ -229,7 +229,7 @@ export default function MapView({ onLoad }) {
       // Créer icône d'arrivée (rouge)
       const endIcon = L.divIcon({
         className: "custom-marker-icon",
-        html: `<div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg border-2 border-white transform transition-transform hover:scale-110">B</div>`,
+        html: `<div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg border-2 border-white transform transition-transform hover:scale-110">B</div>`,
         iconSize: [32, 32],
         iconAnchor: [16, 16],
         popupAnchor: [0, -16],
@@ -470,6 +470,14 @@ export default function MapView({ onLoad }) {
         tileSize: 512,
         zoomOffset: -1,
       }).addTo(mapInstanceRef.current);
+
+      // Mettre à jour l'apparence des popups pour le mode sombre
+      const rootElement = document.documentElement;
+      if (userSettings.darkMode) {
+        rootElement.classList.add('dark-map-popups');
+      } else {
+        rootElement.classList.remove('dark-map-popups');
+      }
     };
 
     updateDarkMode();

@@ -207,54 +207,6 @@ export default function RoutePanel() {
     setShowEndSuggestions(false);
   };
 
-  // Fonction pour gérer la recherche d'adresse de départ
-  const handleSearchStart = async () => {
-    if (!startAddress.trim()) {
-      setAddressError("Veuillez entrer une adresse de départ");
-      return;
-    }
-
-    const result = await geocodeAddress(startAddress);
-    if (result) {
-      setRouteStart(result);
-      setStartAddress(result.displayName);
-      setShowStartSuggestions(false);
-    } else {
-      // Si aucun résultat n'est trouvé, proposer d'utiliser l'adresse saisie avec une position approximative
-      if (
-        window.confirm(
-          `Adresse "${startAddress}" non trouvée. Voulez-vous l'utiliser quand même avec une position approximative ?`
-        )
-      ) {
-        createManualLocation(startAddress, true);
-      }
-    }
-  };
-
-  // Fonction pour gérer la recherche d'adresse d'arrivée
-  const handleSearchEnd = async () => {
-    if (!endAddress.trim()) {
-      setAddressError("Veuillez entrer une adresse d'arrivée");
-      return;
-    }
-
-    const result = await geocodeAddress(endAddress);
-    if (result) {
-      setRouteEnd(result);
-      setEndAddress(result.displayName);
-      setShowEndSuggestions(false);
-    } else {
-      // Si aucun résultat n'est trouvé, proposer d'utiliser l'adresse saisie avec une position approximative
-      if (
-        window.confirm(
-          `Adresse "${endAddress}" non trouvée. Voulez-vous l'utiliser quand même avec une position approximative ?`
-        )
-      ) {
-        createManualLocation(endAddress, false);
-      }
-    }
-  };
-
   // Fonction mémorisée pour obtenir des suggestions de départ
   const debouncedGetStartSuggestions = useCallback(
     debounce(
@@ -356,14 +308,14 @@ export default function RoutePanel() {
   };
 
   return (
-    <div className="flex flex-col p-4 space-y-4 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-      <h2 className="text-xl font-bold text-[#FF6A00] dark:text-[#FF8C3C]">
+    <div className="flex flex-col p-4 space-y-4 bg-white dark:bg-stone-800 border-b border-gray-200 dark:border-stone-800">
+      <h2 className="text-xl font-bold text-[#FF6A00] dark:text-white">
         Planifier votre trajet
       </h2>
 
       {/* Point de départ */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="block text-sm font-medium text-stone-800 dark:text-white/80">
           Point de départ
         </label>
         <div className="flex space-x-2">
@@ -373,15 +325,15 @@ export default function RoutePanel() {
               value={startAddress}
               onChange={handleStartAddressChange}
               placeholder="Adresse de départ"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#FF6A00] focus:border-[#FF6A00] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#FF6A00] focus:border-[#FF6A00] dark:bg-white dark:border-gray-600 dark:text-black/60"
             />
             {showStartSuggestions && startSuggestions.length > 0 && (
-              <ul className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto">
+              <ul className="absolute z-10 w-full mt-1 bg-white dark:bg-stone-400 border border-gray-300 dark:border-stone-400 rounded-md shadow-lg max-h-60 overflow-auto">
                 {startSuggestions.map((suggestion, index) => (
                   <li
                     key={index}
                     onClick={() => selectStartAddress(suggestion)}
-                    className="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 text-sm text-gray-800 dark:text-white truncate"
+                    className="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-stone-400 text-sm text-stone-800 dark:text-white truncate"
                   >
                     {suggestion.displayName}
                   </li>
@@ -389,19 +341,12 @@ export default function RoutePanel() {
               </ul>
             )}
           </div>
-          <button
-            onClick={handleSearchStart}
-            disabled={isAddressSearching}
-            className="px-3 py-2 bg-[#FF6A00] text-white rounded-md hover:bg-[#E05A00] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:ring-opacity-50 disabled:opacity-50 transition duration-200"
-          >
-            {isAddressSearching ? "..." : "🔍"}
-          </button>
         </div>
       </div>
 
       {/* Point d'arrivée */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="block text-sm font-medium text-stone-800 dark:text-white/80">
           Point d&apos;arrivée
         </label>
         <div className="flex space-x-2">
@@ -411,15 +356,15 @@ export default function RoutePanel() {
               value={endAddress}
               onChange={handleEndAddressChange}
               placeholder="Adresse d'arrivée"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#FF6A00] focus:border-[#FF6A00] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#FF6A00] focus:border-[#FF6A00] dark:bg-white dark:border-gray-600 dark:text-black/60"
             />
             {showEndSuggestions && endSuggestions.length > 0 && (
-              <ul className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto">
+              <ul className="absolute z-10 w-full mt-1 bg-white dark:bg-stone-400 border border-gray-300 dark:border-stone-800 rounded-md shadow-lg max-h-60 overflow-auto">
                 {endSuggestions.map((suggestion, index) => (
                   <li
                     key={index}
                     onClick={() => selectEndAddress(suggestion)}
-                    className="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 text-sm text-gray-800 dark:text-white truncate"
+                    className="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-stone-400 text-sm text-stone-800 dark:text-white truncate"
                   >
                     {suggestion.displayName}
                   </li>
@@ -427,19 +372,12 @@ export default function RoutePanel() {
               </ul>
             )}
           </div>
-          <button
-            onClick={handleSearchEnd}
-            disabled={isAddressSearching}
-            className="px-3 py-2 bg-[#FF6A00] text-white rounded-md hover:bg-[#E05A00] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:ring-opacity-50 disabled:opacity-50 transition duration-200"
-          >
-            {isAddressSearching ? "..." : "🔍"}
-          </button>
         </div>
       </div>
 
       {/* Type d'itinéraire */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="block text-sm font-medium text-stone-800 dark:text-gray-300">
           Type d&apos;itinéraire
         </label>
         <div className="flex space-x-2">
@@ -448,7 +386,7 @@ export default function RoutePanel() {
             className={`flex-1 px-3 py-2 rounded-md ${
               route.routeType === "FAST"
                 ? "bg-[#FF6A00] text-white"
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+                : "bg-gray-200 text-stone-800 hover:bg-gray-300 dark:bg-stone-800 dark:text-white dark:hover:text-black dark:hover:bg-white"
             } transition duration-200`}
           >
             🏍️ Rapide
@@ -458,7 +396,7 @@ export default function RoutePanel() {
             className={`flex-1 px-3 py-2 rounded-md ${
               route.routeType === "CURVY"
                 ? "bg-[#FF6A00] text-white"
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+                : "bg-gray-200 text-stone-800 hover:bg-gray-300 dark:bg-stone-800 dark:text-white dark:hover:text-black dark:hover:bg-white"
             } transition duration-200`}
           >
             🛣️ Sinueux
@@ -478,7 +416,7 @@ export default function RoutePanel() {
         className={`w-full mt-4 px-4 py-2 rounded-md focus:outline-none focus:ring-2 ${
           route.isLoading
             ? "bg-gray-400 cursor-not-allowed text-white"
-            : "bg-[#FF6A00] text-white hover:bg-[#E05A00] focus:ring-[#FF6A00] focus:ring-opacity-50"
+            : "bg-[#FF6A00] text-white hover:bg-[#E05A00] focus:ring-[#FF6A00] focus:ring-opacity-50 dark:bg-[#FF6A00] dark:hover:bg-white dark:hover:text-black"
         } relative overflow-hidden transition-all duration-300 ${
           route.isLoading ? "pl-10" : ""
         }`}
@@ -512,7 +450,7 @@ export default function RoutePanel() {
 
       {/* Informations sur l'itinéraire calculé */}
       {route.routeData ? (
-        <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-md shadow-md border border-gray-200 dark:border-gray-700">
+        <div className="mt-4 p-4 bg-gray-50 dark:bg-stone-800 rounded-md shadow-md border border-gray-200 dark:border-stone-800">
           <h3 className="font-semibold text-[#FF6A00] dark:text-[#FF8C3C] flex items-center">
             <span className="text-green-500 mr-2">✓</span>Itinéraire calculé
           </h3>
@@ -521,7 +459,7 @@ export default function RoutePanel() {
               <span className="font-medium text-gray-600 dark:text-gray-300">
                 Distance:
               </span>
-              <span className="font-bold text-gray-800 dark:text-white">
+              <span className="font-bold text-stone-800 dark:text-white">
                 {getRouteDistance(route.routeData)} km
               </span>
             </p>
@@ -529,7 +467,7 @@ export default function RoutePanel() {
               <span className="font-medium text-gray-600 dark:text-gray-300">
                 Durée estimée:
               </span>
-              <span className="font-bold text-gray-800 dark:text-white">
+              <span className="font-bold text-stone-800 dark:text-white">
                 {getRouteDuration(route.routeData)}
               </span>
             </p>
@@ -537,15 +475,15 @@ export default function RoutePanel() {
               <span className="font-medium text-gray-600 dark:text-gray-300">
                 Type:
               </span>
-              <span className="font-bold text-gray-800 dark:text-white">
+              <span className="font-bold text-stone-800 dark:text-white">
                 {route.routeType === "FAST" ? "🏍️ Rapide" : "🛣️ Sinueux"}
               </span>
             </p>
           </div>
         </div>
       ) : (
-        <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-700 rounded-md text-center">
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
+        <div className="mt-4 p-4 bg-gray-50 dark:bg-stone-800 border border-dashed border-gray-300 dark:border-white rounded-md text-center">
+          <p className="text-gray-500 dark:text-white/60 text-sm">
             Définissez un point de départ et d&apos;arrivée puis cliquez sur
             &quot;Calculer l&apos;itinéraire&quot; pour obtenir votre parcours
           </p>

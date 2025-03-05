@@ -8,11 +8,6 @@ export default function WeatherWidget() {
   const { mapData, userSettings, route, loadWeather } = useRideFlowStore();
   const { weather, isLoading } = mapData;
 
-  // Si les données météo ne sont pas activées, ne pas afficher le widget
-  if (!userSettings.showWeather) {
-    return null;
-  }
-
   // Charger manuellement les données météo
   const handleRefreshWeather = () => {
     if (route.start) {
@@ -101,8 +96,13 @@ export default function WeatherWidget() {
     return "✅ Conditions correctes pour rouler. Restez vigilant.";
   };
 
+  // Si les données météo ne sont pas activées, renvoyer un div vide au lieu de null
+  if (!userSettings.showWeather) {
+    return <div className="hidden"></div>; // Div caché plutôt que null
+  }
+
   return (
-    <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+    <div className="p-4 border-t border-gray-200 dark:bg-stone-800">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-xl font-bold text-gray-800 dark:text-white">
           Météo
@@ -158,25 +158,25 @@ export default function WeatherWidget() {
 
           {/* Détails météo */}
           <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded">
+            <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded">
               <p className="text-gray-500 dark:text-gray-400">Ressenti</p>
               <p className="font-medium text-gray-800 dark:text-white">
                 {Math.round(weather.main?.feels_like)}°C
               </p>
             </div>
-            <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded">
+            <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded">
               <p className="text-gray-500 dark:text-gray-400">Humidité</p>
               <p className="font-medium text-gray-800 dark:text-white">
                 {weather.main?.humidity}%
               </p>
             </div>
-            <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded">
+            <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded">
               <p className="text-gray-500 dark:text-gray-400">Vent</p>
               <p className="font-medium text-gray-800 dark:text-white">
                 {Math.round(weather.wind?.speed * 3.6)} km/h
               </p>
             </div>
-            <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded">
+            <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded">
               <p className="text-gray-500 dark:text-gray-400">Visibilité</p>
               <p className="font-medium text-gray-800 dark:text-white">
                 {weather.visibility
@@ -187,7 +187,7 @@ export default function WeatherWidget() {
           </div>
 
           {/* Conseils de sécurité */}
-          <div className="mt-3 p-3 bg-gray-100 dark:bg-gray-800 rounded-md">
+          <div className="mt-3 p-3 bg-gray-100 dark:bg-gray-700 rounded-md">
             <h3 className="font-medium text-gray-800 dark:text-white mb-1">
               Conseils motard
             </h3>

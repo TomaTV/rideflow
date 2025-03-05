@@ -5,6 +5,7 @@ import {
   CloudSun,
   MapPin,
   ChevronRight,
+  Moon,
   ChevronLeft,
 } from "lucide-react";
 
@@ -19,8 +20,8 @@ export default function MapLegend({ userSettings, toggleSetting }) {
         transition-all duration-300 ease-in-out
         ${
           isActive
-            ? "bg-[#FF6A00]/20 text-[#FF6A00]"
-            : "bg-white/80 text-gray-700 hover:bg-gray-100"
+            ? "bg-[#FF6A00]/20 text-[#FF6A00] dark:text-[#FF8C3C]"
+            : "bg-white/80 dark:bg-stone-700/80 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-600"
         }
         cursor-pointer
         border border-black/10
@@ -50,12 +51,12 @@ export default function MapLegend({ userSettings, toggleSetting }) {
     <div
       className={`
         fixed top-4 right-4 z-50
-        bg-white/90 backdrop-blur-sm 
+        bg-white/90 dark:bg-stone-800/90 backdrop-blur-sm 
         rounded-xl shadow-lg 
         transition-all duration-300 ease-in-out
         ${isCollapsed ? "w-16" : "w-64"}
         overflow-hidden
-        border border-black/10
+        border border-black/10 dark:border-white/10
       `}
     >
       <div
@@ -96,6 +97,16 @@ export default function MapLegend({ userSettings, toggleSetting }) {
           icon={<MapPin size={18} className="text-current" />}
           isActive={userSettings.showPOIs}
           toggle={() => toggleSetting("showPOIs")}
+        />
+        <LegendItem
+          label="DarkMode"
+          icon={<Moon size={18} className="text-current" />}
+          isActive={userSettings.darkMode}
+          toggle={() => {
+            console.log("MapLegend: Bouton DarkMode cliqué");
+            toggleSetting("darkMode");
+            console.log("MapLegend: Valeur darkMode après clic =", !userSettings.darkMode);
+          }}
         />
       </div>
     </div>
