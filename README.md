@@ -1,81 +1,92 @@
-# 🏍️ RideFlow - GPS intelligent pour motards
+# RideFlow 🏍️
 
-RideFlow est une application web dédiée aux motards, qui calcule le meilleur itinéraire en tenant compte des spécificités de la route et des dangers en temps réel. Contrairement aux GPS classiques, il ne se contente pas de donner le chemin le plus rapide : il privilégie les routes adaptées aux motos et informe des risques pour une conduite plus sûre.
+![RideFlow Banner](./assets/banner.png)
 
-## 🔹 Fonctionnalités
+![RideFlow Logo](./assets/logo.png)  
+🚀 *L'itinéraire moto intelligent : routes sinueuses, dangers en temps réel et météo intégrée !*
 
-- ✅ **Itinéraires optimisés** : choix entre routes rapides ou sinueuses
-- ✅ **Radars fixes et mobiles** affichés sur la carte
-- ✅ **Accidents et bouchons signalés en temps réel**
-- ✅ **Conditions météo actuelles et prévisions sur votre trajet**
-- ✅ **Affichage dynamique sur une carte interactive**
+---
 
-## 🛠️ Technologies et APIs
+## 📌 Description
+RideFlow est une application web conçue pour les motards, offrant le **meilleur itinéraire moto** en prenant en compte :
+- **Routes sinueuses ou rapides**, selon la préférence du motard 🛣️
+- **Radars fixes et mobiles** 🚨
+- **Accidents signalés et bouchons en temps réel** ⚠️
+- **Conditions météo sur tout le trajet** ☀️🌧️
+- **Points d’intérêt moto** : stations essence, garages 🏍️⛽
 
-### Stack technique
+💡 *Fini les trajets ennuyeux et dangereux, RideFlow t'accompagne en toute sécurité !*
 
-- **Frontend** : Next.js + Tailwind CSS
-- **Carte interactive** : Leaflet.js avec OpenStreetMap
-- **Gestion des états** : Zustand
-- **Requêtes HTTP** : Axios
+---
 
-### APIs utilisées
+## 🚀 Fonctionnalités principales
+✅ Calcul d'itinéraire intelligent (rapide ou sinueux)  
+✅ Affichage des **radars**, **accidents**, et bientôt **bouchons**  
+✅ Carte interactive avec les détails de l’itinéraire  
+✅ Météo **en direct sur tout le trajet**  
+✅ Points d'intérêt : **stations essence, garages**  
 
-1. **OpenRouteService** – Calcul des itinéraires avec option "sinueux"
-2. **HERE Maps API** – Infos trafic et accidents
-3. **OpenWeatherMap** – Conditions météo et alertes
-4. **Overpass API (OSM)** – Points d'intérêt pour motards (stations, garages...)
+---
 
-## 🚀 Installation
+## 🛠️ Technologies utilisées
 
-```bash
-# Cloner le dépôt
-git clone https://github.com/votre-utilisateur/rideflow.git
-cd rideflow
+- **Frontend** : Next.js + Tailwind CSS ⚡
+- **Carte interactive** : Mapbox ou Leaflet.js 🗺️
+- **Gestion des états** : Zustand/Redux
 
-# Installer les dépendances
+### 🌍 APIs utilisées
+- **OpenRouteService** → Calcul des itinéraires 🛣️
+- **TomTom Traffic** → Radars, accidents, bouchons 🚦
+- **Waze API** → Signalements en temps réel 🚗
+- **OpenWeatherMap** → Conditions météo 🌦️
+- **Overpass API (OSM)** → Points d’intérêt (stations essence, garages) ⛽
+
+---
+
+## 🔧 Installation & Exécution
+
+```sh
+# 1️⃣ Clone le repo
+git clone https://github.com/TonPseudo/RideFlow.git
+cd RideFlow
+
+# 2️⃣ Installe les dépendances
 npm install
 
-# Configurer les clés API
-# Modifiez le fichier src/utils/apiConfig.js avec vos propres clés API
+# 3️⃣ Configure les variables d'environnement
+# Crée un fichier .env à la racine et ajoute tes clés API
+cp .env.example .env
 
-# Lancer le serveur de développement
+# 4️⃣ Lance l'application
 npm run dev
 ```
 
-## 📋 Configuration des APIs
+L'application sera disponible sur `http://localhost:3000` 🚀
 
-Pour utiliser RideFlow, vous devez obtenir des clés API pour les services suivants :
+---
 
-1. **OpenRouteService** : [S'inscrire](https://openrouteservice.org/dev/#/signup)
-2. **HERE Maps API** : [S'inscrire](https://developer.here.com/sign-up)
-3. **OpenWeatherMap** : [S'inscrire](https://openweathermap.org/api)
+## 🎯 Roadmap & Améliorations
+🔲 Ajout des bouchons en temps réel  
+🔲 Conseils météo plus précis  
+🔲 Optimisation des requêtes API  
+🔲 Ajout d’une version mobile-friendly  
 
-Une fois vos clés obtenues, modifiez le fichier `src/utils/apiConfig.js` :
+---
 
-```javascript
-export const API_KEYS = {
-  OPENROUTE_SERVICE: "VOTRE_CLÉ_OPENROUTESERVICE",
-  HERE_API: "VOTRE_CLÉ_HERE",
-  OPENWEATHER_MAP: "VOTRE_CLÉ_OPENWEATHERMAP",
-};
+## 📩 Contribuer
+Tu veux améliorer RideFlow ? Fork le projet, propose tes améliorations et ouvre une PR ! Toutes les suggestions sont les bienvenues. 🚀
+
+```sh
+# Fork et clone le repo
+# Crée une branche feature
+# Push et ouvre une Pull Request
 ```
 
-## 🔥 Avantages du projet
-
-- Utile pour les motards 🏍️
-- Utilise plusieurs APIs intéressantes 📡
-- Techniquement challengeant mais réalisable 💡
-- Design simple mais efficace
-
-## 📱 Captures d'écran
-
-(À venir)
+---
 
 ## 📜 Licence
+RideFlow est sous licence MIT. Tu peux l'utiliser librement en respectant les conditions de la licence.
 
-MIT
+---
 
-## 🤝 Contribuer
-
-Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à soumettre une pull request.
+🚀 **RideFlow – Conçu par et pour les motards** 🏍️🔥
