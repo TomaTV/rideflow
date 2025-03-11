@@ -2,3 +2,4 @@
 - Ajouter un truc sur la carte pour afficher la pluie comme sur Zoom Earth (https://api.rainviewer.com/public/maps.json)
 - Ajouter un truc pour réduire le menu routepanel
 - Click & Drop pour mettre les points des GPS.
+- fix problème api tomtom (122) properties incidents iconCategory
