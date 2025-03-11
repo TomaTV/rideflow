@@ -8,7 +8,7 @@
 ## 📌 Description
 RideFlow est une application web conçue pour les motards, offrant le **meilleur itinéraire moto** en prenant en compte :
 - **Routes sinueuses ou rapides**, selon la préférence du motard 🛣️
-- **Radars fixes et mobiles** 🚨
+- **Radars fixes** 🚨
 - **Accidents signalés et bouchons en temps réel** ⚠️
 - **Conditions météo sur tout le trajet** ☀️🌧️
 - **Points d’intérêt moto** : stations essence, garages 🏍️⛽
@@ -19,23 +19,23 @@ RideFlow est une application web conçue pour les motards, offrant le **meilleur
 
 ## 🚀 Fonctionnalités principales
 ✅ Calcul d'itinéraire intelligent (rapide ou sinueux)  
-✅ Affichage des **radars**, **accidents**, et bientôt **bouchons**  
+✅ Affichage des **radars**, **accidents** et **bouchons**  
 ✅ Carte interactive avec les détails de l’itinéraire  
 ✅ Météo **en direct sur tout le trajet**  
 ✅ Points d'intérêt : **stations essence, garages**  
+✅ Instructions du trajet
 
 ---
 
 ## 🛠️ Technologies utilisées
 
 - **Frontend** : Next.js + Tailwind CSS ⚡
-- **Carte interactive** : Mapbox ou Leaflet.js 🗺️
-- **Gestion des états** : Zustand/Redux
+- **Carte interactive** : Leaflet.js 🗺️
+- **Gestion des états** : Zustand
 
 ### 🌍 APIs utilisées
 - **OpenRouteService** → Calcul des itinéraires 🛣️
-- **TomTom Traffic** → Radars, accidents, bouchons 🚦
-- **Waze API** → Signalements en temps réel 🚗
+- **TomTom Traffic** → Radars (data gouv), accidents, bouchons 🚦
 - **OpenWeatherMap** → Conditions météo 🌦️
 - **Overpass API (OSM)** → Points d’intérêt (stations essence, garages) ⛽
 
@@ -45,7 +45,7 @@ RideFlow est une application web conçue pour les motards, offrant le **meilleur
 
 ```sh
 # 1️⃣ Clone le repo
-git clone https://github.com/TonPseudo/RideFlow.git
+git clone https://github.com/TomaTV/RideFlow.git
 cd RideFlow
 
 # 2️⃣ Installe les dépendances
@@ -60,14 +60,6 @@ npm run dev
 ```
 
 L'application sera disponible sur `http://localhost:3000` 🚀
-
----
-
-## 🎯 Roadmap & Améliorations
-🔲 Ajout des bouchons en temps réel  
-🔲 Conseils météo plus précis  
-🔲 Optimisation des requêtes API  
-🔲 Ajout d’une version mobile-friendly  
 
 ---
 
