@@ -1,112 +1,80 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Camera,
   AlertTriangle,
   CloudSun,
   MapPin,
-  ChevronRight,
   Moon,
-  ChevronLeft,
+  Waypoints
 } from "lucide-react";
 
 export default function MapLegend({ userSettings, toggleSetting }) {
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const handleToggle = (setting) => {
+    toggleSetting(setting);
+  };
 
-  const LegendItem = ({ label, icon, isActive, toggle }) => (
-    <div
+  const LegendItem = ({ icon, isActive, toggle }) => (
+    <div 
       className={`
-        flex items-center justify-between 
-        px-3 py-2 rounded-lg 
+        w-12 h-12 flex items-center justify-center rounded-lg cursor-pointer
         transition-all duration-300 ease-in-out
         ${
           isActive
-            ? "bg-[#FF6A00]/20 text-[#FF6A00] dark:text-[#FF8C3C]"
-            : "bg-white/80 dark:bg-stone-700/80 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-600"
+            ? "bg-[#FF6A00]/30 text-[#FF6A00] dark:text-[#FF8C3C]"
+            : "hover:bg-gray-100 dark:hover:bg-stone-600 text-gray-700 dark:text-gray-200"
         }
-        cursor-pointer
-        border border-black/10
       `}
-      onClick={toggle}
+      onClick={() => toggle()}
     >
-      <div className="flex items-center space-x-3">
-        {icon}
-        {!isCollapsed && <span className="text-sm font-medium">{label}</span>}
-      </div>
-      {!isCollapsed && (
-        <div
-          className={`
-            w-5 h-5 rounded-full flex items-center justify-center
-            ${
-              isActive ? "bg-[#FF6A00] text-white" : "bg-gray-200 text-gray-500"
-            }
-          `}
-        >
-          {isActive ? "✓" : ""}
-        </div>
-      )}
+      {icon}
     </div>
   );
 
   return (
     <div
       className={`
-        fixed top-4 right-4 z-50
-        bg-white/90 dark:bg-stone-800/90 backdrop-blur-sm 
+        fixed top-4 right-4 z-40
+        bg-white/95 dark:bg-stone-800/95 backdrop-blur-md
         rounded-xl shadow-lg 
-        transition-all duration-300 ease-in-out
-        ${isCollapsed ? "w-16" : "w-64"}
+        w-16
         overflow-hidden
         border border-black/10 dark:border-white/10
+        transform hover:shadow-xl
       `}
     >
-      <div
-        className="
-          flex items-center 
-          px-4 py-2 
-          bg-[#FF6A00] text-white
-          cursor-pointer
-          justify-between
-        "
-        onClick={() => setIsCollapsed(!isCollapsed)}
-      >
-        {!isCollapsed && <h3 className="font-bold text-sm">Légendes</h3>}
-        {isCollapsed ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
-      </div>
-
-      <div className="p-3 space-y-2">
+      <div className="p-3 flex flex-col items-center space-y-2.5">
         <LegendItem
-          label="Radars"
           icon={<Camera size={18} className="text-current" />}
           isActive={userSettings.showRadars}
-          toggle={() => toggleSetting("showRadars")}
+          toggle={() => handleToggle("showRadars")}
         />
         <LegendItem
-          label="Incidents"
           icon={<AlertTriangle size={18} className="text-current" />}
           isActive={userSettings.showIncidents}
-          toggle={() => toggleSetting("showIncidents")}
+          toggle={() => handleToggle("showIncidents")}
         />
         <LegendItem
-          label="Météo"
           icon={<CloudSun size={18} className="text-current" />}
           isActive={userSettings.showWeather}
-          toggle={() => toggleSetting("showWeather")}
+          toggle={() => handleToggle("showWeather")}
         />
         <LegendItem
-          label="Points d'Intérêt"
           icon={<MapPin size={18} className="text-current" />}
           isActive={userSettings.showPOIs}
-          toggle={() => toggleSetting("showPOIs")}
+          toggle={() => handleToggle("showPOIs")}
         />
+        <div className="border-t border-gray-200 dark:border-white my-1 w-8"></div>
         <LegendItem
-          label="DarkMode"
           icon={<Moon size={18} className="text-current" />}
           isActive={userSettings.darkMode}
-          toggle={() => {
-            console.log("MapLegend: Bouton DarkMode cliqué");
-            toggleSetting("darkMode");
-            console.log("MapLegend: Valeur darkMode après clic =", !userSettings.darkMode);
-          }}
+          toggle={() => handleToggle("darkMode")}
+        />
+        <LegendItem
+          label="Instructions"
+          icon={<Waypoints size={18} className="text-current" />}
+          isActive={userSettings.showInstructions}
+          toggle={() => toggleSetting("showInstructions")}
+          tooltipKey="instructions"
         />
       </div>
     </div>

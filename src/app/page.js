@@ -5,6 +5,7 @@ import MapView from "@/components/MapView";
 import RoutePanel from "@/components/RoutePanel";
 import WeatherWidget from "@/components/WeatherWidget";
 import useRideFlowStore from "@/utils/store";
+import RouteInstructions from "@/components/RouteInstructions";
 
 export default function Home() {
   const { setMapLoaded, userSettings } = useRideFlowStore();
@@ -21,6 +22,7 @@ export default function Home() {
         <div className="w-96 bg-white dark:bg-stone-800 shadow-xl z-10 flex flex-col overflow-y-auto">
           <RoutePanel />
           <WeatherWidget />
+          {userSettings.showInstructions && <RouteInstructions />}
         </div>
 
         {/* Carte principale */}

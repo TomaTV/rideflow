@@ -3,6 +3,7 @@ export const API_KEYS = {
   HERE_API: process.env.NEXT_PUBLIC_HERE_API_KEY,
   OPENWEATHER_MAP: process.env.NEXT_PUBLIC_OPENWEATHER_MAP_KEY,
   MAPTILER: process.env.NEXT_PUBLIC_MAPTILER_KEY,
+  TOMTOM: process.env.NEXT_PUBLIC_TOMTOM_API_KEY,
 };
 
 export const API_ENDPOINTS = {
@@ -14,9 +15,10 @@ export const API_ENDPOINTS = {
   OPENWEATHER_CURRENT: "https://api.openweathermap.org/data/2.5/weather",
   OPENWEATHER_FORECAST: "https://api.openweathermap.org/data/2.5/forecast",
 
-  OVERPASS_API: "https://overpass-api.de/api/interpreter", // CHANGER CA AUSSI
-
-  POIJS_RADARS: "https://data.poi.js.org/radars/", // CHANGER DE DATA
+  TOMTOM_TRAFFIC: "https://api.tomtom.com/traffic/services/5/incidentDetails",
+  
+  OVERPASS_API: "https://overpass-api.de/api/interpreter",
+  TRANSPORT_API: "https://transport.data.gouv.fr/api/disruptions",
 };
 
 export const ROUTE_PROFILES = {

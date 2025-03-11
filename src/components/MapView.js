@@ -37,7 +37,7 @@ export default function MapView({ onLoad }) {
         const instance = L.map(mapRef.current, {
           center: MAP_CONFIG.defaultCenter,
           zoom: MAP_CONFIG.defaultZoom,
-          zoomControl: true,
+          zoomControl: false,
           attributionControl: true,
           scrollWheelZoom: true,
           dragging: true,

@@ -3,6 +3,9 @@
 import { useEffect } from "react";
 import useRideFlowStore from "@/utils/store";
 import { weatherService } from "@/utils/apiServices";
+import {
+  RefreshCcw,
+} from "lucide-react";
 
 export default function WeatherWidget() {
   const { mapData, userSettings, route, loadWeather } = useRideFlowStore();
@@ -104,15 +107,15 @@ export default function WeatherWidget() {
   return (
     <div className="p-4 border-t border-gray-200 dark:bg-stone-800">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+        <h2 className="text-xl font-bold text-stone-800 dark:text-white">
           Météo
         </h2>
         {weather && (
           <span
-            className="text-sm text-blue-600 dark:text-blue-400 cursor-pointer hover:underline"
+            className="text-sm text-[#FF6A00] dark:text-[#FF6A00] cursor-pointer hover:underline"
             onClick={handleRefreshWeather}
           >
-            Actualiser
+            <RefreshCcw size={18} className="text-current" />
           </span>
         )}
       </div>
@@ -137,7 +140,7 @@ export default function WeatherWidget() {
                 {getWeatherIcon(weather.weather[0].id)}
               </span>
               <div>
-                <p className="text-3xl font-bold text-gray-800 dark:text-white">
+                <p className="text-3xl font-bold text-stone-800 dark:text-white">
                   {Math.round(weather.main?.temp)}°C
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400 capitalize">
@@ -158,27 +161,27 @@ export default function WeatherWidget() {
 
           {/* Détails météo */}
           <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded">
+            <div className="bg-gray-100 dark:bg-stone-700 p-2 rounded">
               <p className="text-gray-500 dark:text-gray-400">Ressenti</p>
-              <p className="font-medium text-gray-800 dark:text-white">
+              <p className="font-medium text-stone-800 dark:text-white">
                 {Math.round(weather.main?.feels_like)}°C
               </p>
             </div>
-            <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded">
+            <div className="bg-gray-100 dark:bg-stone-700 p-2 rounded">
               <p className="text-gray-500 dark:text-gray-400">Humidité</p>
-              <p className="font-medium text-gray-800 dark:text-white">
+              <p className="font-medium text-stone-800 dark:text-white">
                 {weather.main?.humidity}%
               </p>
             </div>
-            <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded">
+            <div className="bg-gray-100 dark:bg-stone-700 p-2 rounded">
               <p className="text-gray-500 dark:text-gray-400">Vent</p>
-              <p className="font-medium text-gray-800 dark:text-white">
+              <p className="font-medium text-stone-800 dark:text-white">
                 {Math.round(weather.wind?.speed * 3.6)} km/h
               </p>
             </div>
-            <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded">
+            <div className="bg-gray-100 dark:bg-stone-700 p-2 rounded">
               <p className="text-gray-500 dark:text-gray-400">Visibilité</p>
-              <p className="font-medium text-gray-800 dark:text-white">
+              <p className="font-medium text-stone-800 dark:text-white">
                 {weather.visibility
                   ? `${Math.round(weather.visibility / 1000)} km`
                   : "N/A"}
@@ -187,11 +190,11 @@ export default function WeatherWidget() {
           </div>
 
           {/* Conseils de sécurité */}
-          <div className="mt-3 p-3 bg-gray-100 dark:bg-gray-700 rounded-md">
-            <h3 className="font-medium text-gray-800 dark:text-white mb-1">
+          <div className="mt-3 p-3 bg-gray-100 dark:bg-stone-800 rounded-md">
+            <h3 className="font-medium text-stone-800 dark:text-white mb-1">
               Conseils motard
             </h3>
-            <p className="text-sm text-gray-700 dark:text-gray-300">
+            <p className="text-sm text-stone-800 dark:text-gray-300">
               {getSafetyTips(weather)}
             </p>
           </div>

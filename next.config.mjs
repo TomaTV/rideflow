@@ -9,6 +9,7 @@ const nextConfig = {
       process.env.NEXT_PUBLIC_OPENWEATHER_MAP_KEY,
     NEXT_PUBLIC_MAPTILER_KEY: process.env.NEXT_PUBLIC_MAPTILER_KEY,
   },
+  devIndicators: false,
   // Configuration de sécurité pour les requêtes
   async headers() {
     return [

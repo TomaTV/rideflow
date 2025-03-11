@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import useRideFlowStore from "@/utils/store";
+import image from 'next/image'
 
 export default function RoutePanel() {
   const { route, setRouteStart, setRouteEnd, setRouteType, calculateRoute } =
@@ -309,6 +310,12 @@ export default function RoutePanel() {
 
   return (
     <div className="flex flex-col p-4 space-y-4 bg-white dark:bg-stone-800 border-b border-gray-200 dark:border-stone-800">
+      <h1 className="flex items-center gap-4">
+        <img src="/logo-png.svg" className="w-12 h-12" alt="logo" />
+        <span className="text-3xl font-bold text-stone-800 dark:text-white">
+          RideFlow
+        </span>
+      </h1>
       <h2 className="text-xl font-bold text-[#FF6A00] dark:text-white">
         Planifier votre trajet
       </h2>
@@ -325,7 +332,7 @@ export default function RoutePanel() {
               value={startAddress}
               onChange={handleStartAddressChange}
               placeholder="Adresse de départ"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#FF6A00] focus:border-[#FF6A00] dark:bg-white dark:border-gray-600 dark:text-black/60"
+              className="w-full px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-[#FF6A00] focus:border-[#FF6A00] dark:bg-white dark:text-stone-800"
             />
             {showStartSuggestions && startSuggestions.length > 0 && (
               <ul className="absolute z-10 w-full mt-1 bg-white dark:bg-stone-400 border border-gray-300 dark:border-stone-400 rounded-md shadow-lg max-h-60 overflow-auto">
@@ -356,7 +363,7 @@ export default function RoutePanel() {
               value={endAddress}
               onChange={handleEndAddressChange}
               placeholder="Adresse d'arrivée"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#FF6A00] focus:border-[#FF6A00] dark:bg-white dark:border-gray-600 dark:text-black/60"
+              className="w-full px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-[#FF6A00] focus:border-[#FF6A00] dark:bg-white dark:text-stone-800"
             />
             {showEndSuggestions && endSuggestions.length > 0 && (
               <ul className="absolute z-10 w-full mt-1 bg-white dark:bg-stone-400 border border-gray-300 dark:border-stone-800 rounded-md shadow-lg max-h-60 overflow-auto">
@@ -385,21 +392,21 @@ export default function RoutePanel() {
             onClick={() => setRouteType("FAST")}
             className={`flex-1 px-3 py-2 rounded-md ${
               route.routeType === "FAST"
-                ? "bg-[#FF6A00] text-white"
-                : "bg-gray-200 text-stone-800 hover:bg-gray-300 dark:bg-stone-800 dark:text-white dark:hover:text-black dark:hover:bg-white"
+                ? "bg-[#FF6A00]/30 text-[#FF6A00] dark:text-[#FF8C3C]"
+                : "hover:bg-gray-100 dark:hover:bg-stone-600 text-gray-700 dark:text-gray-200"
             } transition duration-200`}
           >
-            🏍️ Rapide
+            Rapide
           </button>
           <button
             onClick={() => setRouteType("CURVY")}
             className={`flex-1 px-3 py-2 rounded-md ${
               route.routeType === "CURVY"
-                ? "bg-[#FF6A00] text-white"
-                : "bg-gray-200 text-stone-800 hover:bg-gray-300 dark:bg-stone-800 dark:text-white dark:hover:text-black dark:hover:bg-white"
+                ? "bg-[#FF6A00]/30 text-[#FF6A00] dark:text-[#FF8C3C]"
+                : "hover:bg-gray-100 dark:hover:bg-stone-600 text-gray-700 dark:text-gray-200"
             } transition duration-200`}
           >
-            🛣️ Sinueux
+            Sinueux
           </button>
         </div>
       </div>
@@ -415,8 +422,8 @@ export default function RoutePanel() {
         disabled={route.isLoading || !route.start || !route.end}
         className={`w-full mt-4 px-4 py-2 rounded-md focus:outline-none focus:ring-2 ${
           route.isLoading
-            ? "bg-gray-400 cursor-not-allowed text-white"
-            : "bg-[#FF6A00] text-white hover:bg-[#E05A00] focus:ring-[#FF6A00] focus:ring-opacity-50 dark:bg-[#FF6A00] dark:hover:bg-white dark:hover:text-black"
+            ? "bg-[#FF6A00]/30 text-[#FF6A00] dark:text-[#FF8C3C]"
+            : "hover:bg-gray-100 dark:hover:bg-stone-600 text-gray-700 dark:text-gray-200"
         } relative overflow-hidden transition-all duration-300 ${
           route.isLoading ? "pl-10" : ""
         }`}
@@ -450,12 +457,10 @@ export default function RoutePanel() {
 
       {/* Informations sur l'itinéraire calculé */}
       {route.routeData ? (
-        <div className="mt-4 p-4 bg-gray-50 dark:bg-stone-800 rounded-md shadow-md border border-gray-200 dark:border-stone-800">
-          <h3 className="font-semibold text-[#FF6A00] dark:text-[#FF8C3C] flex items-center">
-            <span className="text-green-500 mr-2">✓</span>Itinéraire calculé
-          </h3>
+        <div className="mt-4 p-4 bg-gray-50 dark:bg-stone-800 rounded-md border border-gray-200 dark:border-stone-800">
+          <h3 className="font-semibold text-[#FF6A00] dark:text-[#FF8C3C] flex items-center">Itinéraire calculé</h3>
           <div className="mt-3 text-sm space-y-2">
-            <p className="flex justify-between">
+            <p className="flex justify-between bg-stone-700 rounded-md p-2">
               <span className="font-medium text-gray-600 dark:text-gray-300">
                 Distance:
               </span>
@@ -463,7 +468,7 @@ export default function RoutePanel() {
                 {getRouteDistance(route.routeData)} km
               </span>
             </p>
-            <p className="flex justify-between">
+            <p className="flex justify-between bg-stone-700 rounded-md p-2">
               <span className="font-medium text-gray-600 dark:text-gray-300">
                 Durée estimée:
               </span>
@@ -471,12 +476,12 @@ export default function RoutePanel() {
                 {getRouteDuration(route.routeData)}
               </span>
             </p>
-            <p className="flex justify-between">
+            <p className="flex justify-between bg-stone-700 rounded-md p-2">
               <span className="font-medium text-gray-600 dark:text-gray-300">
                 Type:
               </span>
               <span className="font-bold text-stone-800 dark:text-white">
-                {route.routeType === "FAST" ? "🏍️ Rapide" : "🛣️ Sinueux"}
+                {route.routeType === "FAST" ? "Rapide" : "Sinueux"}
               </span>
             </p>
           </div>

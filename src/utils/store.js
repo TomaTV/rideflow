@@ -4,8 +4,220 @@
  * Ce fichier centralise la gestion d'état de l'application.
  */
 
+// Fonction pour déterminer la direction à partir du texte d'instruction
+function determinerDirection(texte) {
+  const texteBas = texte.toLowerCase();
+  
+  if (texteBas.includes('droite') || texteBas.includes('bifurqu')) {
+    return 'right';
+  }
+  
+  if (texteBas.includes('gauche')) {
+    return 'left';
+  }
+  
+  if (texteBas.includes('tout droit') || texteBas.includes('continuez') || texteBas.includes('continuer')) {
+    return 'straight';
+  }
+  
+  if (texteBas.includes('demi-tour')) {
+    return 'uturn';
+  }
+  
+  if (texteBas.includes('rond-point') || texteBas.includes('sortie')) {
+    return 'roundabout';
+  }
+  
+  return '';  // Direction inconnue
+}
+
 import { create } from 'zustand';
 import { routeService, trafficService, weatherService, poiService } from './apiServices';
+
+function extractInstructions(routeData) {
+  // Pour le débogage, regardez la structure des données reçues
+  console.log("Extraction des instructions depuis les données d'itinéraire:");
+  
+  // Si la structure utilise le format OpenRouteService standard
+  if (routeData && routeData.routes && routeData.routes[0]) {
+    const route = routeData.routes[0];
+    
+    // Parcourir les segments
+    if (route.segments) {
+      const allInstructions = [];
+      
+      // Ajouter une instruction de départ
+      allInstructions.push({
+        id: 'depart',
+        instruction: 'Point de départ',
+        distance: 0,
+        duration: 0,
+        type: 'depart',
+        name: route.summary ? `Distance totale: ${formatDistance(route.summary.distance)}` : ''
+      });
+      
+      // Parcourir tous les segments et récupérer les étapes
+      route.segments.forEach((segment, segmentIndex) => {
+        if (segment.steps) {
+          segment.steps.forEach((step, stepIndex) => {
+            // Extraction basique des informations
+            const instruction = traduireInstruction(step.instruction) || "Continuez tout droit";
+            const distance = step.distance || 0;
+            const duration = step.duration || 0;
+            const name = step.name || "";
+            const type = step.type || "";
+            
+            allInstructions.push({
+              id: `${segmentIndex}-${stepIndex}`,
+              instruction,
+              distance,
+              duration,
+              name,
+              type,
+              direction: determinerDirection(instruction)
+            });
+          });
+        }
+      });
+      
+      // Ajouter une instruction d'arrivée
+      allInstructions.push({
+        id: 'arrive',
+        instruction: 'Arrivée à destination',
+        distance: 0,
+        duration: 0,
+        type: 'arrive',
+        name: route.summary ? `Durée estimée: ${formatDuration(route.summary.duration)}` : ''
+      });
+      
+      return allInstructions;
+    }
+  }
+  
+  // Si la structure n'est pas reconnue, essayer de détecter le format
+  if (routeData && routeData.features) {
+    try {
+      const feature = routeData.features.find(f => f.properties && f.properties.segments);
+      if (feature && feature.properties && feature.properties.segments) {
+        // Format GeoJSON détecté, récursion avec une structure adaptée
+        return extractInstructions({
+          routes: [{
+            segments: feature.properties.segments,
+            summary: feature.properties.summary
+          }]
+        });
+      }
+    } catch (e) {
+      console.error("Erreur lors de l'extraction des instructions:", e);
+    }
+  }
+  
+  console.warn("Format de données non reconnu pour les instructions, génération d'instructions basiques");
+  
+  // Générer des instructions minimales si le format n'est pas reconnu
+  return [
+    { id: 'depart', instruction: 'Point de départ', distance: 0, type: 'depart' },
+    { id: 'info', instruction: 'Itinéraire calculé', distance: getRouteDistance(routeData), type: 'info' },
+    { id: 'arrive', instruction: 'Arrivée à destination', distance: 0, type: 'arrive' }
+  ];
+}
+
+// Fonction pour traduire les instructions en français
+function traduireInstruction(texte) {
+  if (!texte) return "";
+  
+  // Déjà en français
+  if (texte.includes("droite") || texte.includes("gauche") || texte.includes("continuez")) {
+    return texte;
+  }
+  
+  // Traductions courantes
+  const traductions = {
+    "Turn right": "Tournez à droite",
+    "Turn left": "Tournez à gauche",
+    "Turn slight right": "Légère bifurcation à droite",
+    "Turn slight left": "Légère bifurcation à gauche",
+    "Turn sharp right": "Virage serré à droite",
+    "Turn sharp left": "Virage serré à gauche",
+    "Make a U-turn": "Faites demi-tour",
+    "Continue": "Continuez tout droit",
+    "Continue straight": "Continuez tout droit",
+    "Keep right": "Serrez à droite",
+    "Keep left": "Serrez à gauche",
+    "Enter roundabout": "Entrez dans le rond-point",
+    "Exit roundabout": "Sortez du rond-point",
+    "Take the 1st exit": "Prenez la 1ère sortie",
+    "Take the 2nd exit": "Prenez la 2ème sortie",
+    "Take the 3rd exit": "Prenez la 3ème sortie",
+    "Take the exit": "Prenez la sortie",
+    "At the roundabout": "Au rond-point",
+    "Destination": "Destination",
+    "You have arrived at your destination": "Vous êtes arrivé à destination"
+  };
+  
+  // Essayer de trouver une traduction exacte
+  if (traductions[texte]) return traductions[texte];
+  
+  // Essayer de trouver des motifs à remplacer
+  let resultat = texte;
+  
+  // Remplacer les parties communes
+  for (const [anglais, francais] of Object.entries(traductions)) {
+    if (resultat.includes(anglais)) {
+      resultat = resultat.replace(anglais, francais);
+    }
+  }
+  
+  // Remplacer les nombres d'ordinal
+  resultat = resultat.replace(/take the (\d+)(?:st|nd|rd|th) exit/i, (match, nombre) => {
+    if (nombre === "1") return "Prenez la 1ère sortie";
+    return `Prenez la ${nombre}ème sortie`;
+  });
+  
+  // Si aucune traduction trouvée, renvoyer le texte original
+  return resultat;
+}
+
+// Fonction utilitaire pour formater les distances
+function formatDistance(meters) {
+  if (!meters && meters !== 0) return "";
+  if (meters < 1000) {
+    return `${Math.round(meters)} mètres`;
+  }
+  return `${(meters / 1000).toFixed(1)} km`;
+}
+
+// Fonction utilitaire pour formater les durées
+function formatDuration(seconds) {
+  if (!seconds && seconds !== 0) return "";
+  
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  
+  if (hours > 0) {
+    return `${hours} h ${minutes} min`;
+  }
+  return `${minutes} min`;
+}
+
+// Fonction pour récupérer la distance d'un itinéraire
+function getRouteDistance(routeData) {
+  if (!routeData) return 0;
+
+  // Essayer différents formats
+  if (routeData.routes && routeData.routes[0] && routeData.routes[0].summary) {
+    return routeData.routes[0].summary.distance;
+  }
+  
+  if (routeData.features && routeData.features[0] && 
+      routeData.features[0].properties && 
+      routeData.features[0].properties.summary) {
+    return routeData.features[0].properties.summary.distance;
+  }
+  
+  return 0;
+}
+
 
 const useRideFlowStore = create((set, get) => ({
   // État de la carte
@@ -23,6 +235,7 @@ const useRideFlowStore = create((set, get) => ({
     waypoints: [],
     routeType: 'FAST', // 'FAST' ou 'CURVY'
     routeData: null,
+    instructions: [],
     isLoading: false,
     error: null
   },
@@ -47,6 +260,7 @@ const useRideFlowStore = create((set, get) => ({
     showIncidents: false,
     showWeather: true,
     showPOIs: true,
+    showInstructions: true,
     darkMode: false
   },
   
@@ -127,6 +341,7 @@ const useRideFlowStore = create((set, get) => ({
         route: {
           ...state.route,
           routeData,
+          instructions: extractInstructions(routeData),
           isLoading: false
         }
       }));

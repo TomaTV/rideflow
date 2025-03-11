@@ -26,7 +26,8 @@ export const routeService = {
       const response = await axios.post('/api/route', {
         startCoords,
         endCoords,
-        routeType
+        routeType,
+        includeInstructions: true
       });
       
       console.log('Réponse de l\'API d\'itinéraire:', response.data);

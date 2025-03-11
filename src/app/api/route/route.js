@@ -30,7 +30,9 @@ export async function POST(request) {
       preference: profile.preference,
       format: 'geojson',
       instructions: true,
-      units: 'km'
+      instructions_format: 'text',
+      language: 'fr',
+      units: 'm'
     };
     
     // Ajouter les options spécifiques au profil si elles existent

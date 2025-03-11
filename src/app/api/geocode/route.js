@@ -18,20 +18,13 @@ export async function GET(request) {
     );
   }
 
-  // Ne JAMAIS forcer les données simulées - toujours utiliser l'API réelle en priorité
-  // Les données simulées ne servent que de fallback en cas d'erreur
-
   try {
     console.log("Préparation de la requête vers Nominatim...");
-    // Ajouter un délai pour respecter la politique de rate limiting de Nominatim (max 1 requête par seconde)
     await new Promise((resolve) => setTimeout(resolve, 200));
 
-    // Faire la requête à Nominatim avec un timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 secondes de timeout
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-    // Construire l'URL avec des paramètres supplémentaires pour cibler la France
-    // et améliorer la pertinence des résultats
     const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
       query
     )}&countrycodes=fr&limit=${limit}&addressdetails=1`;
@@ -46,10 +39,9 @@ export async function GET(request) {
         signal: controller.signal,
       });
 
-      clearTimeout(timeoutId); // Annuler le timeout si la requête est terminée
+      clearTimeout(timeoutId); 
     } catch (fetchError) {
       console.error("Erreur lors de la requête fetch:", fetchError);
-      // En cas d'erreur de fetch, utiliser directement les données simulées
       console.log(
         "Utilisation des données simulées suite à une erreur de fetch"
       );
@@ -63,7 +55,6 @@ export async function GET(request) {
       console.error(
         `Nominatim a répondu avec le status: ${response.status}, message: ${errorText}`
       );
-      // En cas d'erreur de l'API, utiliser les données simulées
       console.log(
         "Utilisation des données simulées suite à une réponse non-OK"
       );
@@ -80,7 +71,6 @@ export async function GET(request) {
       );
     } catch (jsonError) {
       console.error("Erreur lors du parsing JSON:", jsonError);
-      // En cas d'erreur de parsing, utiliser les données simulées
       console.log(
         "Utilisation des données simulées suite à une erreur de parsing JSON"
       );
@@ -89,10 +79,8 @@ export async function GET(request) {
       );
     }
 
-    // Vérifier si les données sont valides
     if (!Array.isArray(data) || data.length === 0) {
       console.error("Format de réponse invalide ou vide de Nominatim");
-      // Si les données ne sont pas dans le format attendu, utiliser les données simulées
       console.log(
         "Utilisation des données simulées suite à un format invalide ou vide"
       );
@@ -101,7 +89,6 @@ export async function GET(request) {
       );
     }
 
-    // Transformer les données pour ne garder que ce dont nous avons besoin
     const suggestions = data.map((item) => ({
       latitude: parseFloat(item.lat),
       longitude: parseFloat(item.lon),
@@ -111,12 +98,10 @@ export async function GET(request) {
     }));
 
     console.log(`Retour de ${suggestions.length} suggestions transformées`);
-    // Renvoyer les données transformées
     return NextResponse.json(suggestions);
   } catch (error) {
     console.error("Erreur de géocodage:", error);
 
-    // En cas d'erreur, utiliser des données simulées basées sur la requête si le texte est suffisamment long
     if (query.length > 3) {
       console.log("Utilisation de données simulées pour:", query);
       const mockResults = generateMockAddressResults(query, parseInt(limit));
@@ -136,7 +121,6 @@ function generateMockAddressResults(query, limit = 5) {
     `Génération de ${limit} résultats simulés pour la requête: ${query}`
   );
 
-  // Liste de villes françaises pour générer des adresses vraisemblables
   const cities = [
     {
       name: "Paris",
@@ -215,21 +199,17 @@ function generateMockAddressResults(query, limit = 5) {
     "Rue Gambetta",
   ];
 
-  // Générer un nombre limité d'adresses
   const numResults = Math.min(limit, 5);
   const results = [];
 
-  // Déterminer les villes correspondantes à la requête
   let matchingCities = cities.filter(
     (city) =>
       city.name.toLowerCase().includes(query.toLowerCase()) ||
       query.toLowerCase().includes(city.name.toLowerCase())
   );
 
-  // Si aucune correspondance exacte, vérifier si la requête elle-même ressemble à un nom de ville
   if (matchingCities.length === 0) {
     const words = query.split(/\s+/);
-    // Chercher un mot qui pourrait être un nom de ville (commence par une majuscule, plus de 3 lettres)
     const potentialCityNames = words.filter(
       (word) =>
         word.length > 3 &&
@@ -238,13 +218,11 @@ function generateMockAddressResults(query, limit = 5) {
     );
 
     if (potentialCityNames.length > 0) {
-      // Utiliser le potentiel nom de ville comme une nouvelle ville avec des coordonnées approximatives en France
       const cityName = potentialCityNames[0];
-      // Coordonnées approximatives en France (centre)
       const newCity = {
         name: cityName,
-        lat: 46.603354 + (Math.random() - 0.5) * 3, // ~France center latitude +/- noise
-        lon: 1.888334 + (Math.random() - 0.5) * 3, // ~France center longitude +/- noise
+        lat: 46.603354 + (Math.random() - 0.5) * 3,
+        lon: 1.888334 + (Math.random() - 0.5) * 3,
         quartiers: [
           `Centre-ville de ${cityName}`,
           `Nord de ${cityName}`,
@@ -254,7 +232,6 @@ function generateMockAddressResults(query, limit = 5) {
 
       matchingCities = [newCity];
 
-      // Ajouter la ville elle-même comme premier résultat
       results.push({
         latitude: newCity.lat,
         longitude: newCity.lon,
@@ -263,28 +240,21 @@ function generateMockAddressResults(query, limit = 5) {
         importance: 0.95,
       });
     } else {
-      // Vérifier si la requête contient le nom d'une rue connue
       const containsStreetName = streets.some((street) =>
         query.toLowerCase().includes(street.toLowerCase())
       );
 
       if (containsStreetName) {
-        // Si la requête contient un nom de rue, utiliser quelques villes aléatoires
         matchingCities = cities.slice(0, 3);
       } else {
-        // Sinon, utiliser toutes les villes
         matchingCities = cities;
       }
     }
   }
-
-  // Si nous n'avons toujours pas de villes, utiliser la première comme fallback
   if (matchingCities.length === 0 && cities.length > 0) {
     matchingCities = [cities[0]];
   }
 
-  // Pour les requêtes qui semblent être juste un nom de ville, ajouter le centre-ville
-  // (mais seulement si nous n'avons pas déjà créé une ville personnalisée ci-dessus)
   if (
     results.length === 0 &&
     matchingCities.length === 1 &&
@@ -299,7 +269,6 @@ function generateMockAddressResults(query, limit = 5) {
       importance: 0.95,
     });
 
-    // Ajouter quelques quartiers de cette ville
     if (city.quartiers && city.quartiers.length > 0) {
       for (let i = 0; i < Math.min(2, city.quartiers.length); i++) {
         const quartier = city.quartiers[i];
@@ -316,13 +285,10 @@ function generateMockAddressResults(query, limit = 5) {
       }
     }
   }
-  // Pour les requêtes qui ressemblent à des adresses
   else if (results.length === 0) {
-    // Déterminer si la requête est une adresse avec un numéro
     const hasNumber = /\d+/.test(query);
     const streetQuery = hasNumber ? query.replace(/^\d+\s+/, "") : query;
 
-    // Générer des résultats pour chaque ville correspondante jusqu'à atteindre le nombre souhaité
     for (
       let i = 0;
       results.length < numResults && i < matchingCities.length;
@@ -330,7 +296,6 @@ function generateMockAddressResults(query, limit = 5) {
     ) {
       const city = matchingCities[i];
 
-      // Si la requête contient un nom de rue spécifique
       if (streetQuery.length > 3) {
         const streetNumber = hasNumber
           ? query.match(/^\d+/)[0]
@@ -346,7 +311,6 @@ function generateMockAddressResults(query, limit = 5) {
           importance: 0.9 - results.length * 0.05,
         });
       }
-      // Sinon, générer une adresse avec une rue aléatoire
       else {
         const street = streets[Math.floor(Math.random() * streets.length)];
         const streetNumber = Math.floor(Math.random() * 100) + 1;
@@ -364,7 +328,6 @@ function generateMockAddressResults(query, limit = 5) {
     }
   }
 
-  // S'assurer d'avoir au moins un résultat
   if (results.length === 0 && cities.length > 0) {
     const city = cities[0];
     const street = streets[0];
