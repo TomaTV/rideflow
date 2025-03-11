@@ -5,16 +5,20 @@ import {
   CloudSun,
   MapPin,
   Moon,
-  Waypoints
+  Waypoints,
+  Map,
 } from "lucide-react";
+import useRideFlowStore from "@/utils/store";
 
 export default function MapLegend({ userSettings, toggleSetting }) {
+  // Utiliser le store directement pour le mode de placement des points
+  const { togglePointPlacementMode } = useRideFlowStore();
   const handleToggle = (setting) => {
     toggleSetting(setting);
   };
 
   const LegendItem = ({ icon, isActive, toggle }) => (
-    <div 
+    <div
       className={`
         w-12 h-12 flex items-center justify-center rounded-lg cursor-pointer
         transition-all duration-300 ease-in-out
@@ -24,7 +28,11 @@ export default function MapLegend({ userSettings, toggleSetting }) {
             : "hover:bg-gray-100 dark:hover:bg-stone-600 text-gray-700 dark:text-gray-200"
         }
       `}
-      onClick={() => toggle()}
+      onClick={(e) => {
+        // Empêcher la propagation du clic vers la carte
+        e.stopPropagation();
+        toggle();
+      }}
     >
       {icon}
     </div>
@@ -41,6 +49,7 @@ export default function MapLegend({ userSettings, toggleSetting }) {
         border border-black/10 dark:border-white/10
         transform hover:shadow-xl
       `}
+      onClick={(e) => e.stopPropagation()} // Empêcher la propagation des clics sur le conteneur
     >
       <div className="p-3 flex flex-col items-center space-y-2.5">
         <LegendItem
@@ -75,6 +84,11 @@ export default function MapLegend({ userSettings, toggleSetting }) {
           isActive={userSettings.showInstructions}
           toggle={() => toggleSetting("showInstructions")}
           tooltipKey="instructions"
+        />
+        <LegendItem
+          icon={<Map size={18} className="text-current" />}
+          isActive={userSettings.pointPlacementMode}
+          toggle={() => togglePointPlacementMode()}
         />
       </div>
     </div>

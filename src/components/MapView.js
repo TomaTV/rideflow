@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import useRideFlowStore from "@/utils/store";
 import { MAP_CONFIG } from "@/utils/apiConfig";
 import MapLegend from "@/components/MapLegend";
@@ -16,9 +16,41 @@ export default function MapView({ onLoad }) {
   const incidentsLayerRef = useRef(null);
   const radarsLayerRef = useRef(null);
   const poisLayerRef = useRef(null);
+  const {
+    map,
+    route,
+    mapData,
+    userSettings,
+    setMapBounds,
+    toggleSetting,
+    handleMapClick,
+  } = useRideFlowStore();
 
-  const { map, route, mapData, userSettings, setMapBounds, toggleSetting } =
-    useRideFlowStore();
+  // Appliquer un écouteur global pour rétablir le curseur quand le mode de placement est désactivé
+  useEffect(() => {
+    // Fonction pour rétablir le curseur normal
+    const resetCursor = () => {
+      if (!userSettings.pointPlacementMode && mapRef.current) {
+        setTimeout(() => {
+          if (mapRef.current) {
+            mapRef.current.style.cursor = 'grab';
+            console.log("Curseur réinitialisé par le gestionnaire global");
+          }
+        }, 10);
+      }
+    };
+
+    // Observer les changements dans le store
+    const unsubscribe = useRideFlowStore.subscribe(
+      (state) => state.userSettings.pointPlacementMode,
+      (pointPlacementMode) => {
+        if (!pointPlacementMode) resetCursor();
+      }
+    );
+
+    // Nettoyer la souscription
+    return () => unsubscribe();
+  }, []);
 
   // Initialisation de la carte
   useEffect(() => {
@@ -41,7 +73,7 @@ export default function MapView({ onLoad }) {
           attributionControl: true,
           scrollWheelZoom: true,
           dragging: true,
-          doubleClickZoom: true,
+          doubleClickZoom: false,
           boxZoom: true,
         });
 
@@ -75,6 +107,28 @@ export default function MapView({ onLoad }) {
             bounds.getEast(), // maxLon
             bounds.getNorth(), // maxLat
           ]);
+        });
+
+        instance.on("click", async (e) => {
+          // Le contrôle du mode est maintenant dans handleMapClick
+          const result = await handleMapClick(e.latlng);
+          
+          // Si le clic a été traité et un point a été placé, mettre à jour manuellement le curseur
+          if (result && mapRef.current) {
+            // Récupérer l'état actuel
+            const state = useRideFlowStore.getState();
+            const isSelectingStart = state.isSelectingStartPoint;
+            
+            // Changer le curseur selon le type de point qu'on va placer
+            const cursorStyle = isSelectingStart
+              ? 'url("/cursor-start.svg"), crosshair'
+              : 'url("/cursor-end.svg"), pointer';
+            
+            // Forcer la mise à jour du curseur
+            mapRef.current.style.cursor = cursorStyle;
+            console.log("Curseur mis à jour manuellement après clic, maintenant:", 
+              isSelectingStart ? "Point de départ" : "Point d'arrivée");
+          }
         });
 
         // Déclencher l'événement moveend au démarrage pour initialiser les bounds
@@ -444,6 +498,49 @@ export default function MapView({ onLoad }) {
     updatePOIs();
   }, [mapData.pois, userSettings.showPOIs]);
 
+  // Mettre à jour le curseur basé sur le mode et le type de point
+  useEffect(() => {
+    if (!mapRef.current) return;
+    
+    if (userSettings.pointPlacementMode) {
+      // Récupérer l'état actuel
+      const state = useRideFlowStore.getState();
+      const isSelectingStart = state.isSelectingStartPoint;
+      
+      // Changer le curseur selon le type de point qu'on va placer
+      const cursorStyle = isSelectingStart
+        ? 'url("/cursor-start.svg"), crosshair'
+        : 'url("/cursor-end.svg"), pointer';
+      mapRef.current.style.cursor = cursorStyle;
+      
+      console.log("Mode de sélection actif, curseur:", 
+        isSelectingStart ? "Point de départ" : "Point d'arrivée");
+    } else {
+      // Mode de placement désactivé, remettre le curseur normal
+      mapRef.current.style.cursor = 'grab';
+      console.log("Mode de sélection désactivé, curseur normal.");
+    }
+  }, [userSettings.pointPlacementMode, userSettings.darkMode]); // Ajouter darkMode pour s'assurer que le curseur se réinitialise
+  
+  // Ajouter un indicateur visuel pour débuggage
+  const [debugMode, setDebugMode] = useState({
+    isSelectingStart: true,
+    lastUpdated: new Date().toISOString()
+  });
+  
+  // Vérifier régulièrement l'état
+  useEffect(() => {
+    const checkInterval = setInterval(() => {
+      const state = useRideFlowStore.getState();
+      setDebugMode({
+        isSelectingStart: state.isSelectingStartPoint,
+        lastUpdated: new Date().toISOString()
+      });
+    }, 500);
+    
+    return () => clearInterval(checkInterval);
+  }, []);
+
   // Gestion du mode sombre
   useEffect(() => {
     if (!mapInstanceRef.current) return;
@@ -474,9 +571,9 @@ export default function MapView({ onLoad }) {
       // Mettre à jour l'apparence des popups pour le mode sombre
       const rootElement = document.documentElement;
       if (userSettings.darkMode) {
-        rootElement.classList.add('dark-map-popups');
+        rootElement.classList.add("dark-map-popups");
       } else {
-        rootElement.classList.remove('dark-map-popups');
+        rootElement.classList.remove("dark-map-popups");
       }
     };
 
@@ -505,6 +602,16 @@ export default function MapView({ onLoad }) {
       <div className="absolute bottom-4 right-4 z-999">
         <MapLegend userSettings={userSettings} toggleSetting={toggleSetting} />
       </div>
+      
+      {/* Indicateur de mode de sélection pour débuggage */}
+      {userSettings.pointPlacementMode && (
+        <div className="absolute top-20 left-4 bg-white/80 p-2 rounded shadow z-50">
+          <div className="text-xs font-mono">
+            <div>Mode: {debugMode.isSelectingStart ? "Point A (départ)" : "Point B (arrivée)"}</div>
+            <div className="text-gray-500 text-[10px]">{debugMode.lastUpdated}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
