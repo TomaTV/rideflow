@@ -1,8 +1,8 @@
 # RideFlow 🏍️
 
-![RideFlow Banner](./assets/banner.png)
+![RideFlow Banner](/public/Banner.png)
 
-![RideFlow Logo](./assets/logo.png)  
+![RideFlow Logo](/public/logo.svg)  
 🚀 *L'itinéraire moto intelligent : routes sinueuses, dangers en temps réel et météo intégrée !*
 
 ---
