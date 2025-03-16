@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import useRideFlowStore from "@/utils/store";
-import image from 'next/image'
 
 export default function RoutePanel() {
   const { route, setRouteStart, setRouteEnd, setRouteType, calculateRoute } =
@@ -14,56 +13,10 @@ export default function RoutePanel() {
   const [endSuggestions, setEndSuggestions] = useState([]);
   const [showStartSuggestions, setShowStartSuggestions] = useState(false);
   const [showEndSuggestions, setShowEndSuggestions] = useState(false);
-  const [manualEntryMode, setManualEntryMode] = useState(false); // Mode saisie manuelle
 
   // Refs pour les timeouts de debounce
   const startDebounceTimerRef = useRef(null);
   const endDebounceTimerRef = useRef(null);
-
-  // Fonction pour créer manuellement un point à partir d'une adresse saisie
-  const createManualLocation = (address, isStart) => {
-    console.log(`Création manuelle d'un point pour: ${address}`);
-
-    // Coordonnées approximatives de la France
-    let lat = 46.603354;
-    let lon = 1.888334;
-
-    // Vérifier pour quelques grandes villes
-    const lowerAddress = address.toLowerCase();
-    if (lowerAddress.includes("paris")) {
-      lat = 48.8566;
-      lon = 2.3522;
-    } else if (lowerAddress.includes("lyon")) {
-      lat = 45.7578;
-      lon = 4.832;
-    } else if (lowerAddress.includes("marseille")) {
-      lat = 43.2965;
-      lon = 5.3698;
-    } else if (lowerAddress.includes("bordeaux")) {
-      lat = 44.8378;
-      lon = -0.5792;
-    } else if (lowerAddress.includes("lille")) {
-      lat = 50.6292;
-      lon = 3.0573;
-    }
-
-    const customLocation = {
-      latitude: lat,
-      longitude: lon,
-      displayName: address,
-      type: "manual_address",
-    };
-
-    if (isStart) {
-      setRouteStart(customLocation);
-    } else {
-      setRouteEnd(customLocation);
-    }
-
-    console.log(`Point créé manuellement:`, customLocation);
-    setAddressError(""); // Effacer les messages d'erreur
-    return customLocation;
-  };
 
   // Fonction de debounce pour limiter les requêtes API
   const debounce = (func, delay, timerRef) => {
@@ -458,7 +411,9 @@ export default function RoutePanel() {
       {/* Informations sur l'itinéraire calculé */}
       {route.routeData ? (
         <div className="mt-4 p-4 bg-gray-50 dark:bg-stone-800 rounded-md border border-gray-200 dark:border-stone-800">
-          <h3 className="font-semibold text-[#FF6A00] dark:text-[#FF8C3C] flex items-center">Itinéraire calculé</h3>
+          <h3 className="font-semibold text-[#FF6A00] dark:text-[#FF8C3C] flex items-center">
+            Itinéraire calculé
+          </h3>
           <div className="mt-3 text-sm space-y-2">
             <p className="flex justify-between bg-stone-700 rounded-md p-2">
               <span className="font-medium text-gray-600 dark:text-gray-300">

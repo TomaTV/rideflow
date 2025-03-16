@@ -1,9 +1,3 @@
-/**
- * Store global pour RideFlow utilisant Zustand
- *
- * Ce fichier centralise la gestion d'état de l'application.
- */
-
 // Fonction pour déterminer la direction à partir du texte d'instruction
 function determinerDirection(texte) {
   const texteBas = texte.toLowerCase();
