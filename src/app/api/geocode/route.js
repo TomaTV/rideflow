@@ -39,7 +39,7 @@ export async function GET(request) {
         signal: controller.signal,
       });
 
-      clearTimeout(timeoutId); 
+      clearTimeout(timeoutId);
     } catch (fetchError) {
       console.error("Erreur lors de la requête fetch:", fetchError);
       console.log(
@@ -284,8 +284,7 @@ function generateMockAddressResults(query, limit = 5) {
         });
       }
     }
-  }
-  else if (results.length === 0) {
+  } else if (results.length === 0) {
     const hasNumber = /\d+/.test(query);
     const streetQuery = hasNumber ? query.replace(/^\d+\s+/, "") : query;
 
@@ -310,8 +309,7 @@ function generateMockAddressResults(query, limit = 5) {
           type: "address",
           importance: 0.9 - results.length * 0.05,
         });
-      }
-      else {
+      } else {
         const street = streets[Math.floor(Math.random() * streets.length)];
         const streetNumber = Math.floor(Math.random() * 100) + 1;
         const latOffset = (Math.random() - 0.5) * 0.02;

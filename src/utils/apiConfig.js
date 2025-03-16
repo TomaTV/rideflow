@@ -14,7 +14,6 @@ export const API_ENDPOINTS = {
   TOMTOM_TRAFFIC: "https://api.tomtom.com/traffic/services/5/incidentDetails",
 
   OVERPASS_API: "https://overpass-api.de/api/interpreter",
-  TRANSPORT_API: "https://transport.data.gouv.fr/api/disruptions",
 };
 
 export const ROUTE_PROFILES = {
