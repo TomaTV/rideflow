@@ -10,7 +10,6 @@ export const routeService = {
         routeType,
       });
 
-      // Utiliser notre API proxy pour éviter les problèmes CORS et formater correctement les données
       const response = await axios.post("/api/route", {
         startCoords,
         endCoords,
@@ -30,7 +29,6 @@ export const routeService = {
 export const trafficService = {
   getIncidents: async (bbox) => {
     try {
-      // Utiliser notre API proxy pour éviter les problèmes CORS
       const response = await axios.get(`/api/incidents?bbox=${bbox.join(",")}`);
       return response.data;
     } catch (error) {
@@ -41,13 +39,11 @@ export const trafficService = {
 
   getRadars: async (bbox) => {
     try {
-      // Construction des paramètres de la requête
       const west = bbox[0];
       const south = bbox[1];
       const east = bbox[2];
       const north = bbox[3];
 
-      // Utiliser notre API proxy pour éviter les problèmes CORS
       const response = await axios.get(`/api/radars`, {
         params: {
           west,
@@ -88,7 +84,6 @@ export const weatherService = {
 
 export const poiService = {
   getBikerPOIs: async (bbox) => {
-    // Requête Overpass pour trouver les stations, garages, etc.
     const query = `
       [out:json];
       (

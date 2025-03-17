@@ -11,7 +11,6 @@ import {
 import useRideFlowStore from "@/utils/store";
 
 export default function MapLegend({ userSettings, toggleSetting }) {
-  // Utiliser le store directement pour le mode de placement des points
   const { togglePointPlacementMode } = useRideFlowStore();
   const handleToggle = (setting) => {
     toggleSetting(setting);
@@ -29,7 +28,6 @@ export default function MapLegend({ userSettings, toggleSetting }) {
         }
       `}
       onClick={(e) => {
-        // Empêcher la propagation du clic vers la carte
         e.stopPropagation();
         toggle();
       }}
@@ -49,7 +47,7 @@ export default function MapLegend({ userSettings, toggleSetting }) {
         border border-black/10 dark:border-white/10
         transform hover:shadow-xl
       `}
-      onClick={(e) => e.stopPropagation()} // Empêcher la propagation des clics sur le conteneur
+      onClick={(e) => e.stopPropagation()}
     >
       <div className="p-3 flex flex-col items-center space-y-2.5">
         <LegendItem

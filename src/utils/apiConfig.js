@@ -41,7 +41,6 @@ export const MAP_CONFIG = {
     attribution:
       '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   },
-  // Style pour les itinéraires
   routeStyle: {
     fast: {
       color: "#3388ff",

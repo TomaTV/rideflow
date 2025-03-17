@@ -11,23 +11,19 @@ export default function WeatherWidget() {
   const { mapData, userSettings, route, loadWeather } = useRideFlowStore();
   const { weather, isLoading } = mapData;
 
-  // Charger manuellement les données météo
   const handleRefreshWeather = () => {
     if (route.start) {
       loadWeather(route.start.latitude, route.start.longitude);
     }
   };
 
-  // Charger les données météo lorsque le point de départ change
   useEffect(() => {
     if (route.start && userSettings.showWeather) {
       handleRefreshWeather();
     }
   }, [route.start, userSettings.showWeather]);
 
-  // Fonction pour obtenir l'icône météo en fonction du code météo
   const getWeatherIcon = (code) => {
-    // Code météo OpenWeatherMap: https://openweathermap.org/weather-conditions
     const firstDigit = Math.floor(code / 100);
 
     switch (firstDigit) {
@@ -99,13 +95,12 @@ export default function WeatherWidget() {
     return "✅ Conditions correctes pour rouler. Restez vigilant.";
   };
 
-  // Si les données météo ne sont pas activées, renvoyer un div vide au lieu de null
   if (!userSettings.showWeather) {
     return <div className="hidden"></div>; // Div caché plutôt que null
   }
 
   return (
-    <div className="p-4 border-t border-gray-200 dark:bg-stone-800">
+    <div className="p-4 dark:bg-stone-800">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-xl font-bold text-stone-800 dark:text-white">
           Météo

@@ -10,7 +10,6 @@ export default function RouteInstructions() {
         return null;
     }
   
-  // Pour débugage
   console.log("Instructions avec directions:", instructions);
 
   if (!instructions || instructions.length === 0) {
@@ -32,14 +31,10 @@ export default function RouteInstructions() {
   }
 
   const getInstructionIcon = (instruction) => {
-    // Afficher les informations pour le débogage
     console.log("Instruction:", instruction.instruction, "Direction:", instruction.direction, "Type:", instruction.type);
     
-    // Vérifier le texte de l'instruction
     const text = instruction.instruction.toLowerCase();
     
-    // Déterminer le type d'icône
-    // Cas spéciaux d'abord
     if (instruction.type === "depart") {
       return <Flag size={20} className="text-green-500" />;
     }
@@ -55,7 +50,6 @@ export default function RouteInstructions() {
       return <RotateCw size={20} className="text-[#FF6A00]" />;
     }
     
-    // Virages et directions
     if (text.includes("tournez à gauche") || 
         text.includes("bifurquez à gauche") || 
         text.includes("gauche")) {
@@ -78,11 +72,9 @@ export default function RouteInstructions() {
       return <RotateCw size={20} className="text-[#FF6A00]" />;
     }
     
-    // Cas par défaut
     return <ArrowRight size={20} className="text-[#FF6A00]" />;
   };
 
-  // Formater la distance
   const formatDistance = (meters) => {
     if (meters < 1000) {
       return `${Math.round(meters)} m`;

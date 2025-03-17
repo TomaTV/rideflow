@@ -14,11 +14,9 @@ export default function RoutePanel() {
   const [showStartSuggestions, setShowStartSuggestions] = useState(false);
   const [showEndSuggestions, setShowEndSuggestions] = useState(false);
 
-  // Refs pour les timeouts de debounce
   const startDebounceTimerRef = useRef(null);
   const endDebounceTimerRef = useRef(null);
 
-  // Fonction de debounce pour limiter les requêtes API
   const debounce = (func, delay, timerRef) => {
     return (...args) => {
       if (timerRef.current) {
@@ -30,7 +28,6 @@ export default function RoutePanel() {
     };
   };
 
-  // Fonction pour obtenir des suggestions d'adresses via notre API proxy
   const getSuggestions = async (query, isStart = true) => {
     if (!query.trim() || query.length < 3) {
       if (isStart) {
@@ -47,7 +44,6 @@ export default function RoutePanel() {
     setAddressError("");
 
     try {
-      // Utiliser notre API proxy pour éviter les problèmes CORS
       console.log(`Recherche d'adresses pour: ${query}`);
       const response = await fetch(
         `/api/geocode?q=${encodeURIComponent(query)}`
@@ -91,13 +87,11 @@ export default function RoutePanel() {
     }
   };
 
-  // Fonction pour géocoder une adresse (transforme texte en coordonnées)
   const geocodeAddress = async (address) => {
     setIsAddressSearching(true);
     setAddressError("");
 
     try {
-      // Utiliser notre API proxy pour éviter les problèmes CORS
       console.log(`Géocodage de l'adresse: ${address}`);
       const response = await fetch(
         `/api/geocode?q=${encodeURIComponent(address)}&limit=1`
@@ -127,11 +121,9 @@ export default function RoutePanel() {
     }
   };
 
-  // Fonction pour sélectionner une adresse de départ partir des suggestions
   const selectStartAddress = (suggestion) => {
     console.log("Sélection de l'adresse de départ:", suggestion);
 
-    // Créer une copie propre de l'objet suggestion pour éviter les champs inutiles
     const cleanSuggestion = {
       latitude: suggestion.latitude,
       longitude: suggestion.longitude,
@@ -144,11 +136,9 @@ export default function RoutePanel() {
     setShowStartSuggestions(false);
   };
 
-  // Fonction pour sélectionner une adresse d'arrivée partir des suggestions
   const selectEndAddress = (suggestion) => {
     console.log("Sélection de l'adresse d'arrivée:", suggestion);
 
-    // Créer une copie propre de l'objet suggestion pour éviter les champs inutiles
     const cleanSuggestion = {
       latitude: suggestion.latitude,
       longitude: suggestion.longitude,
@@ -161,7 +151,6 @@ export default function RoutePanel() {
     setShowEndSuggestions(false);
   };
 
-  // Fonction mémorisée pour obtenir des suggestions de départ
   const debouncedGetStartSuggestions = useCallback(
     debounce(
       (value) => getSuggestions(value, true),
@@ -171,47 +160,39 @@ export default function RoutePanel() {
     []
   );
 
-  // Fonction mémorisée pour obtenir des suggestions d'arrivée
   const debouncedGetEndSuggestions = useCallback(
     debounce((value) => getSuggestions(value, false), 500, endDebounceTimerRef),
     []
   );
 
-  // Fonction pour gérer le changement d'adresse de départ
   const handleStartAddressChange = (e) => {
     const value = e.target.value;
     setStartAddress(value);
 
-    // Effacer les suggestions si le champ est vide
     if (!value.trim() || value.length < 3) {
       setStartSuggestions([]);
       setShowStartSuggestions(false);
       return;
     }
 
-    // Réinitialiser toute erreur précédente
     setAddressError("");
     debouncedGetStartSuggestions(value);
   };
 
-  // Fonction pour gérer le changement d'adresse d'arrivée
   const handleEndAddressChange = (e) => {
     const value = e.target.value;
     setEndAddress(value);
 
-    // Effacer les suggestions si le champ est vide
     if (!value.trim() || value.length < 3) {
       setEndSuggestions([]);
       setShowEndSuggestions(false);
       return;
     }
 
-    // Réinitialiser toute erreur précédente
     setAddressError("");
     debouncedGetEndSuggestions(value);
   };
 
-  // Fonction pour gérer le calcul d'itinéraire
   const handleCalculateRoute = () => {
     console.log("Calcul d'itinéraire avec:", {
       start: route.start,
@@ -223,7 +204,6 @@ export default function RoutePanel() {
       return;
     }
 
-    // Vérification supplémentaire pour assurer que les coordonnées sont valides
     if (
       !isValidCoordinate(route.start.latitude, route.start.longitude) ||
       !isValidCoordinate(route.end.latitude, route.end.longitude)
@@ -236,7 +216,6 @@ export default function RoutePanel() {
 
     calculateRoute();
 
-    // Ajouter un log pour vérifier la structure des données après le calcul (asynchrone)
     setTimeout(() => {
       if (route.routeData) {
         console.log(
@@ -247,7 +226,6 @@ export default function RoutePanel() {
     }, 2000);
   };
 
-  // Fonction pour vérifier la validité des coordonnées
   const isValidCoordinate = (lat, lon) => {
     return (
       typeof lat === "number" &&
@@ -273,7 +251,6 @@ export default function RoutePanel() {
         Planifier votre trajet
       </h2>
 
-      {/* Point de départ */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-stone-800 dark:text-white/80">
           Point de départ
@@ -304,7 +281,6 @@ export default function RoutePanel() {
         </div>
       </div>
 
-      {/* Point d'arrivée */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-stone-800 dark:text-white/80">
           Point d&apos;arrivée
@@ -335,7 +311,6 @@ export default function RoutePanel() {
         </div>
       </div>
 
-      {/* Type d'itinéraire */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-stone-800 dark:text-gray-300">
           Type d&apos;itinéraire
@@ -364,12 +339,10 @@ export default function RoutePanel() {
         </div>
       </div>
 
-      {/* Message d'erreur */}
       {(addressError || route.error) && (
         <div className="text-danger text-sm">{addressError || route.error}</div>
       )}
 
-      {/* Bouton de calcul d'itinéraire */}
       <button
         onClick={handleCalculateRoute}
         disabled={route.isLoading || !route.start || !route.end}
@@ -408,7 +381,6 @@ export default function RoutePanel() {
         {route.isLoading ? "Calcul en cours..." : "Calculer l'itinéraire"}
       </button>
 
-      {/* Informations sur l'itinéraire calculé */}
       {route.routeData ? (
         <div className="mt-4 p-4 bg-gray-50 dark:bg-stone-800 rounded-md border border-gray-200 dark:border-stone-800">
           <h3 className="font-semibold text-[#FF6A00] dark:text-[#FF8C3C] flex items-center">
@@ -453,14 +425,11 @@ export default function RoutePanel() {
   );
 }
 
-// Fonction pour récupérer la distance d'un itinéraire quel que soit le format de données
 function getRouteDistance(routeData) {
   if (!routeData) return "--";
 
-  // Vérifier les différentes structures possibles de routeData
   let distance = null;
 
-  // Format 1: GeoJSON direct avec propriétés
   if (
     routeData.properties &&
     routeData.properties.summary &&
@@ -468,7 +437,7 @@ function getRouteDistance(routeData) {
   ) {
     distance = routeData.properties.summary.distance;
   }
-  // Format 2: Routes array avec summary
+
   else if (
     routeData.routes &&
     routeData.routes[0] &&
@@ -476,7 +445,7 @@ function getRouteDistance(routeData) {
   ) {
     distance = routeData.routes[0].summary.distance;
   }
-  // Format 3: Features array de GeoJSON
+
   else if (
     routeData.features &&
     routeData.features[0] &&
@@ -486,12 +455,10 @@ function getRouteDistance(routeData) {
     distance = routeData.features[0].properties.summary.distance;
   }
 
-  // Si la distance est en mètres, convertir en kilomètres
   if (distance && distance > 1000) {
     return (distance / 1000).toFixed(1);
   }
 
-  // Si on n'a pas trouvé de distance valide ou si elle est déjà en kilomètres
   return distance ? distance.toFixed(1) : "--";
 }
 

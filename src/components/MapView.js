@@ -5,7 +5,6 @@ import useRideFlowStore from "@/utils/store";
 import { MAP_CONFIG } from "@/utils/apiConfig";
 import MapLegend from "@/components/MapLegend";
 import "leaflet/dist/leaflet.css";
-// Importation pour décoder les polylines
 import { decode } from "@mapbox/polyline";
 
 export default function MapView({ onLoad }) {
@@ -26,9 +25,7 @@ export default function MapView({ onLoad }) {
     handleMapClick,
   } = useRideFlowStore();
 
-  // Appliquer un écouteur global pour rétablir le curseur quand le mode de placement est désactivé
   useEffect(() => {
-    // Fonction pour rétablir le curseur normal
     const resetCursor = () => {
       if (!userSettings.pointPlacementMode && mapRef.current) {
         setTimeout(() => {
@@ -40,7 +37,6 @@ export default function MapView({ onLoad }) {
       }
     };
 
-    // Observer les changements dans le store
     const unsubscribe = useRideFlowStore.subscribe(
       (state) => state.userSettings.pointPlacementMode,
       (pointPlacementMode) => {
@@ -48,24 +44,18 @@ export default function MapView({ onLoad }) {
       }
     );
 
-    // Nettoyer la souscription
     return () => unsubscribe();
   }, []);
 
-  // Initialisation de la carte
   useEffect(() => {
     let L;
 
-    // Chargement dynamique de Leaflet (côté client uniquement)
     const loadLeaflet = async () => {
       try {
-        // Importer dynamiquement Leaflet
         L = (await import("leaflet")).default;
 
-        // S'assurer que l'élément DOM existe et que la carte n'est pas déjà initialisée
         if (!mapRef.current || mapInstanceRef.current) return;
 
-        // Créer la carte
         const instance = L.map(mapRef.current, {
           center: MAP_CONFIG.defaultCenter,
           zoom: MAP_CONFIG.defaultZoom,
@@ -77,7 +67,6 @@ export default function MapView({ onLoad }) {
           boxZoom: true,
         });
 
-        // Ajouter le fond de carte MapTiler Basic
         L.tileLayer(MAP_CONFIG.tileLayer.url, {
           attribution: MAP_CONFIG.tileLayer.attribution,
           maxZoom: 19,
@@ -85,20 +74,16 @@ export default function MapView({ onLoad }) {
           zoomOffset: -1,
         }).addTo(instance);
 
-        // Initialiser les groupes de couches pour les différents éléments
         routeLayerRef.current = L.layerGroup().addTo(instance);
         markersLayerRef.current = L.layerGroup().addTo(instance);
         incidentsLayerRef.current = L.layerGroup().addTo(instance);
         radarsLayerRef.current = L.layerGroup().addTo(instance);
         poisLayerRef.current = L.layerGroup().addTo(instance);
 
-        // Stocker l'instance de la carte
         mapInstanceRef.current = instance;
 
-        // Informer le parent que la carte est chargée
         if (onLoad) onLoad();
 
-        // Événement de changement de vue pour mettre à jour les bounds
         instance.on("moveend", () => {
           const bounds = instance.getBounds();
           setMapBounds([
@@ -110,28 +95,22 @@ export default function MapView({ onLoad }) {
         });
 
         instance.on("click", async (e) => {
-          // Le contrôle du mode est maintenant dans handleMapClick
           const result = await handleMapClick(e.latlng);
-          
-          // Si le clic a été traité et un point a été placé, mettre à jour manuellement le curseur
+
           if (result && mapRef.current) {
-            // Récupérer l'état actuel
             const state = useRideFlowStore.getState();
             const isSelectingStart = state.isSelectingStartPoint;
-            
-            // Changer le curseur selon le type de point qu'on va placer
+
             const cursorStyle = isSelectingStart
               ? 'url("/cursor-start.svg"), crosshair'
               : 'url("/cursor-end.svg"), pointer';
             
-            // Forcer la mise à jour du curseur
             mapRef.current.style.cursor = cursorStyle;
             console.log("Curseur mis à jour manuellement après clic, maintenant:", 
               isSelectingStart ? "Point de départ" : "Point d'arrivée");
           }
         });
 
-        // Déclencher l'événement moveend au démarrage pour initialiser les bounds
         instance.fire("moveend");
       } catch (error) {
         console.error("Erreur lors de l'initialisation de la carte:", error);
@@ -140,7 +119,6 @@ export default function MapView({ onLoad }) {
 
     loadLeaflet();
 
-    // Nettoyage à la suppression du composant
     return () => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
@@ -149,24 +127,19 @@ export default function MapView({ onLoad }) {
     };
   }, []);
 
-  // Mise à jour de l'itinéraire sur la carte
   useEffect(() => {
     const updateRoute = async () => {
       if (!mapInstanceRef.current || !routeLayerRef.current) return;
 
-      // Importer dynamiquement Leaflet
       const L = (await import("leaflet")).default;
 
-      // Effacer l'ancien itinéraire
       routeLayerRef.current.clearLayers();
 
-      // Si pas de données d'itinéraire, ne rien faire
       if (!route.routeData) return;
 
       try {
         console.log("Données d'itinéraire reçues:", route.routeData);
 
-        // Créer une couche GeoJSON pour l'itinéraire
         const routeStyle =
           route.routeType === "FAST"
             ? MAP_CONFIG.routeStyle.fast
@@ -174,9 +147,7 @@ export default function MapView({ onLoad }) {
 
         let routeLayer = null;
 
-        // Traiter les différents formats possibles
         if (route.routeData.type && route.routeData.features) {
-          // Format GeoJSON FeatureCollection standard
           routeLayer = L.geoJSON(route.routeData, {
             style: routeStyle,
           });
@@ -184,14 +155,12 @@ export default function MapView({ onLoad }) {
           route.routeData.type === "Feature" &&
           route.routeData.geometry
         ) {
-          // Format GeoJSON Feature simple
           routeLayer = L.geoJSON(route.routeData, {
             style: routeStyle,
           });
         } else if (route.routeData.routes && route.routeData.routes[0]) {
           const routeInfo = route.routeData.routes[0];
 
-          // Vérifier si la géométrie est déjà au format GeoJSON
           if (
             routeInfo.geometry &&
             routeInfo.geometry.type === "LineString" &&
@@ -209,19 +178,15 @@ export default function MapView({ onLoad }) {
               style: routeStyle,
             });
           }
-          // Vérifier si c'est une polyline encodée (format typique d'OpenRouteService)
           else if (typeof routeInfo.geometry === "string") {
             try {
-              // Décoder la polyline en coordonnées
               const decodedCoordinates = decode(routeInfo.geometry);
 
-              // Transformer les coordonnées au format attendu par Leaflet (inversion lat/lng)
               const latlngs = decodedCoordinates.map((coord) => [
                 coord[0],
                 coord[1],
               ]);
 
-              // Créer une polyline Leaflet
               routeLayer = L.polyline(latlngs, routeStyle);
             } catch (e) {
               console.error("Erreur lors du décodage de la polyline:", e);
@@ -237,10 +202,8 @@ export default function MapView({ onLoad }) {
           return;
         }
 
-        // Ajouter à la couche d'itinéraire
         routeLayer.addTo(routeLayerRef.current);
 
-        // Ajuster la vue pour voir tout l'itinéraire avec un délai pour s'assurer que la couche est prête
         setTimeout(() => {
           try {
             if (routeLayer.getBounds) {
@@ -260,18 +223,14 @@ export default function MapView({ onLoad }) {
     updateRoute();
   }, [route.routeData, route.routeType]);
 
-  // Mise à jour des marqueurs de départ et d'arrivée
   useEffect(() => {
     const updateMarkers = async () => {
       if (!mapInstanceRef.current || !markersLayerRef.current) return;
 
-      // Importer dynamiquement Leaflet
       const L = (await import("leaflet")).default;
 
-      // Effacer les anciens marqueurs
       markersLayerRef.current.clearLayers();
 
-      // Créer icône de départ (verte)
       const startIcon = L.divIcon({
         className: "custom-marker-icon",
         html: `<div class="w-8 h-8 bg-[#FF6A00] rounded-full flex items-center justify-center text-white font-bold shadow-lg border-2 border-white transform transition-transform hover:scale-110">A</div>`,
@@ -280,7 +239,6 @@ export default function MapView({ onLoad }) {
         popupAnchor: [0, -16],
       });
 
-      // Créer icône d'arrivée (rouge)
       const endIcon = L.divIcon({
         className: "custom-marker-icon",
         html: `<div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg border-2 border-white transform transition-transform hover:scale-110">B</div>`,
@@ -289,7 +247,6 @@ export default function MapView({ onLoad }) {
         popupAnchor: [0, -16],
       });
 
-      // Ajouter marqueur de départ si défini
       if (route.start) {
         L.marker([route.start.latitude, route.start.longitude], {
           icon: startIcon,
@@ -309,7 +266,6 @@ export default function MapView({ onLoad }) {
           .addTo(markersLayerRef.current);
       }
 
-      // Ajouter marqueur d'arrivée si défini
       if (route.end) {
         L.marker([route.end.latitude, route.end.longitude], { icon: endIcon })
           .bindPopup(
@@ -331,21 +287,16 @@ export default function MapView({ onLoad }) {
     updateMarkers();
   }, [route.start, route.end]);
 
-  // Mise à jour des incidents sur la carte
   useEffect(() => {
     const updateIncidents = async () => {
       if (!mapInstanceRef.current || !incidentsLayerRef.current) return;
 
-      // Importer dynamiquement Leaflet
       const L = (await import("leaflet")).default;
 
-      // Effacer les incidents précédents
       incidentsLayerRef.current.clearLayers();
 
-      // Ne rien faire si les incidents sont désactivés
       if (!userSettings.showIncidents || !mapData.incidents.length) return;
 
-      // Icône pour les incidents
       const incidentIcon = L.divIcon({
         className: "custom-incident-icon",
         html: '<div class="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center text-white">⚠️</div>',
@@ -353,10 +304,8 @@ export default function MapView({ onLoad }) {
         iconAnchor: [12, 12],
       });
 
-      // Ajouter chaque incident sur la carte
       mapData.incidents.forEach((incident) => {
         try {
-          // Adapter selon le format spécifique de HERE Maps
           const coords = incident.LOCATION.GEOLOC.COORDINATES;
           const lat = coords.LATITUDE;
           const lng = coords.LONGITUDE;
@@ -375,21 +324,16 @@ export default function MapView({ onLoad }) {
     updateIncidents();
   }, [mapData.incidents, userSettings.showIncidents]);
 
-  // Mise à jour des radars sur la carte
   useEffect(() => {
     const updateRadars = async () => {
       if (!mapInstanceRef.current || !radarsLayerRef.current) return;
 
-      // Importer dynamiquement Leaflet
       const L = (await import("leaflet")).default;
 
-      // Effacer les radars précédents
       radarsLayerRef.current.clearLayers();
 
-      // Ne rien faire si les radars sont désactivés
       if (!userSettings.showRadars || !mapData.radars.length) return;
 
-      // Icône pour les radars
       const radarIcon = L.divIcon({
         className: "custom-radar-icon",
         html: '<div class="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center text-white">📷</div>',
@@ -397,7 +341,6 @@ export default function MapView({ onLoad }) {
         iconAnchor: [12, 12],
       });
 
-      // Ajouter chaque radar sur la carte
       mapData.radars.forEach((radar) => {
         try {
           const lat = radar.lat;
@@ -419,21 +362,16 @@ export default function MapView({ onLoad }) {
     updateRadars();
   }, [mapData.radars, userSettings.showRadars]);
 
-  // Mise à jour des POIs sur la carte
   useEffect(() => {
     const updatePOIs = async () => {
       if (!mapInstanceRef.current || !poisLayerRef.current) return;
 
-      // Importer dynamiquement Leaflet
       const L = (await import("leaflet")).default;
 
-      // Effacer les POIs précédents
       poisLayerRef.current.clearLayers();
 
-      // Ne rien faire si les POIs sont désactivés
       if (!userSettings.showPOIs || !mapData.pois.length) return;
 
-      // Fonction pour obtenir l'icône en fonction du type de POI
       const getPoiIcon = (tags) => {
         let iconHtml = "";
 
@@ -465,10 +403,8 @@ export default function MapView({ onLoad }) {
         });
       };
 
-      // Ajouter chaque POI sur la carte
       mapData.pois.forEach((poi) => {
         try {
-          // Format spécifique d'Overpass API
           const lat = poi.lat;
           const lng = poi.lon;
           const tags = poi.tags || {};
@@ -483,7 +419,6 @@ export default function MapView({ onLoad }) {
       });
     };
 
-    // Fonction pour obtenir le type de POI à partir des tags
     const getPoiType = (tags) => {
       if (tags.amenity === "fuel") return "Station-service";
       if (tags.shop === "motorcycle") return "Magasin moto";
@@ -498,16 +433,13 @@ export default function MapView({ onLoad }) {
     updatePOIs();
   }, [mapData.pois, userSettings.showPOIs]);
 
-  // Mettre à jour le curseur basé sur le mode et le type de point
   useEffect(() => {
     if (!mapRef.current) return;
     
     if (userSettings.pointPlacementMode) {
-      // Récupérer l'état actuel
       const state = useRideFlowStore.getState();
       const isSelectingStart = state.isSelectingStartPoint;
-      
-      // Changer le curseur selon le type de point qu'on va placer
+
       const cursorStyle = isSelectingStart
         ? 'url("/cursor-start.svg"), crosshair'
         : 'url("/cursor-end.svg"), pointer';
@@ -516,19 +448,16 @@ export default function MapView({ onLoad }) {
       console.log("Mode de sélection actif, curseur:", 
         isSelectingStart ? "Point de départ" : "Point d'arrivée");
     } else {
-      // Mode de placement désactivé, remettre le curseur normal
       mapRef.current.style.cursor = 'grab';
       console.log("Mode de sélection désactivé, curseur normal.");
     }
-  }, [userSettings.pointPlacementMode, userSettings.darkMode]); // Ajouter darkMode pour s'assurer que le curseur se réinitialise
+  }, [userSettings.pointPlacementMode, userSettings.darkMode]);
   
-  // Ajouter un indicateur visuel pour débuggage
   const [debugMode, setDebugMode] = useState({
     isSelectingStart: true,
     lastUpdated: new Date().toISOString()
   });
   
-  // Vérifier régulièrement l'état
   useEffect(() => {
     const checkInterval = setInterval(() => {
       const state = useRideFlowStore.getState();
@@ -541,20 +470,16 @@ export default function MapView({ onLoad }) {
     return () => clearInterval(checkInterval);
   }, []);
 
-  // Gestion du mode sombre
   useEffect(() => {
     if (!mapInstanceRef.current) return;
 
     const updateDarkMode = async () => {
-      // Importer dynamiquement Leaflet
       const L = (await import("leaflet")).default;
 
-      // Utiliser le tileset MapTiler en fonction du mode
       const tileConfig = userSettings.darkMode
         ? MAP_CONFIG.darkModeTileLayer
         : MAP_CONFIG.tileLayer;
 
-      // Supprimer l'ancien tileset et ajouter le nouveau
       mapInstanceRef.current.eachLayer((layer) => {
         if (layer instanceof L.TileLayer) {
           mapInstanceRef.current.removeLayer(layer);
@@ -568,7 +493,6 @@ export default function MapView({ onLoad }) {
         zoomOffset: -1,
       }).addTo(mapInstanceRef.current);
 
-      // Mettre à jour l'apparence des popups pour le mode sombre
       const rootElement = document.documentElement;
       if (userSettings.darkMode) {
         rootElement.classList.add("dark-map-popups");
@@ -586,7 +510,7 @@ export default function MapView({ onLoad }) {
       className="w-full h-full relative overflow-hidden"
       style={{ zIndex: 0, height: "100vh" }}
     >
-      {/* Superposition pour le chargement */}
+
       {(route.isLoading ||
         mapData.isLoading.incidents ||
         mapData.isLoading.radars ||
@@ -598,12 +522,10 @@ export default function MapView({ onLoad }) {
         </div>
       )}
 
-      {/* Légendes */}
       <div className="absolute bottom-4 right-4 z-999">
         <MapLegend userSettings={userSettings} toggleSetting={toggleSetting} />
       </div>
       
-      {/* Indicateur de mode de sélection pour débuggage */}
       {userSettings.pointPlacementMode && (
         <div className="absolute top-20 left-4 bg-white/80 p-2 rounded shadow z-50">
           <div className="text-xs font-mono">
