@@ -74,6 +74,14 @@ Tu veux améliorer RideFlow ? Fork le projet, propose tes améliorations et ouvr
 
 ---
 
+## ⚠️ Utilisation personnelle uniquement
+
+- 🚨 Ce projet est à des fins personnelles et ne doit en aucun cas être utilisé par le grand public.
+- 🚫 Les données affichées (radars, trafic, météo) ne sont pas garanties comme étant exactes et ne doivent pas être utilisées pour la conduite.
+- 💡 RideFlow est un projet expérimental et n'est pas destiné à une diffusion publique.
+
+---
+
 ## 📜 Licence
 RideFlow est sous licence MIT. Tu peux l'utiliser librement en respectant les conditions de la licence.
 

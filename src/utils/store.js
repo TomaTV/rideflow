@@ -294,11 +294,11 @@ const useRideFlowStore = create((set, get) => ({
 
   // Paramètres utilisateur
   userSettings: {
-    showRadars: false,
-    showIncidents: false,
-    showWeather: true,
+    showRadars: true,
+    showIncidents: true,
+    showWeather: false,
     showPOIs: true,
-    showInstructions: true,
+    showInstructions: false,
     darkMode: false,
     pointPlacementMode: false, // Mode de placement des points par clic sur la carte
   },
